@@ -29,7 +29,7 @@ services:
     working_dir: /app
     restart: always
     environment:
-      POSTGRES_DB: 'twitter'
+      POSTGRES_DB: 'college'
       POSTGRES_USER: 'user'
       POSTGRES_PASSWORD: 'password'
     volumes:

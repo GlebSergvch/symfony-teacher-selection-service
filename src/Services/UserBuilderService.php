@@ -46,6 +46,14 @@ class UserBuilderService
     {
         $user = $this->userManager->create($login, UserRole::STUDENT);
 
+        //создание userProfile с последующим persist в $this->userProfileManager->create вызывает ошибку
+
+//        $userProfileDto->user_id = $user->getId();
+//        $userProfile = $this->userProfileManager->create($userProfileDto);
+//        $user->addUserProfile($user, $userProfile);
+
+        $user = $this->userManager->updateUserWithUserProfile($user);
+
         return $user;
     }
 }

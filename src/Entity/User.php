@@ -29,6 +29,9 @@ class User
     #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: false)]
     private DateTime $updatedAt;
 
+    #[ORM\OneToOne(mappedBy: "user", targetEntity: "UserProfile", cascade: ["persist"])]
+    private UserProfile|null $userProfile = null;
+
     #[ORM\ManyToMany(targetEntity: 'User', mappedBy: 'skills')]
     private Collection $teachers;
 

@@ -30,6 +30,12 @@ class Group
     #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: false)]
     private DateTime $updatedAt;
 
+    #[ORM\Column(name: 'created_by', type: 'bigint', nullable: true)]
+    private DateTime $createdBy;
+
+    #[ORM\Column(name: 'updated_by', type: 'bigint', nullable: true)]
+    private DateTime $updatedBy;
+
     public function getName(): string
     {
         return $this->name;

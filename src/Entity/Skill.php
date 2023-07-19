@@ -15,7 +15,7 @@ class Skill
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: false)]
+    #[ORM\Column(type: 'string', length: 128, nullable: false)]
     private string $name;
 
     #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
@@ -23,6 +23,12 @@ class Skill
 
     #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: false)]
     private DateTime $updatedAt;
+
+    #[ORM\Column(name: 'created_by', type: 'bigint', nullable: true)]
+    private DateTime $createdBy;
+
+    #[ORM\Column(name: 'updated_by', type: 'bigint', nullable: true)]
+    private DateTime $updatedBy;
 
     public function getName(): string
     {

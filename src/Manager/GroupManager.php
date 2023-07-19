@@ -26,4 +26,9 @@ class GroupManager
 
         return $group;
     }
+
+    public function findGroupByName(string $name): array
+    {
+        return $this->entityManager->getRepository(Group::class)->findBy(['name' => $name]);
+    }
 }

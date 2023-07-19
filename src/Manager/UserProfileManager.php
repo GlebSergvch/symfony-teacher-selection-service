@@ -18,7 +18,7 @@ class UserProfileManager
     public function create(UserProfileDto $userProfileDto): UserProfile
     {
         $userProfile = new UserProfile();
-        $userProfile->setUserId($userProfileDto->user_id);
+//        $userProfile->setUserId($userProfileDto->user_id);
         $userProfile->setFirstname($userProfileDto->firstname);
         $userProfile->setMiddlename($userProfileDto->middlename);
         $userProfile->setLastname($userProfileDto->lastname);
@@ -27,7 +27,7 @@ class UserProfileManager
 
 //        var_dump($userProfile->getUserId()); die();
         $this->entityManager->persist($userProfile);
-        $this->entityManager->flush();
+//        $this->entityManager->flush();
 //        var_dump($userProfile); die();
         return $userProfile;
     }

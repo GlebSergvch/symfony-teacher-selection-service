@@ -23,4 +23,9 @@ class SkillManager
 
         return $skill;
     }
+
+    public function findSkillByName(string $name): array
+    {
+        return $this->entityManager->getRepository(Skill::class)->findBy(['name' => $name]);
+    }
 }

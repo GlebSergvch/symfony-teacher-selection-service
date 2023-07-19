@@ -48,12 +48,6 @@ class UserBuilderService
         $user = $this->userManager->create($login, UserRole::STUDENT);
         $user->setUserProfile($userProfile);
         $this->userManager->flushUserWithUserProfile($user);
-        //создание userProfile с последующим flush в $this->userProfileManager->create вызывает ошибку
-
-//        $userProfileDto->user_id = $user->getId();
-//        $user->addUserProfile($user, $userProfile);
-////        var_dump($user); die();
-//        $user = $this->userManager->createUserWithUserProfile($user);
 
         return $user;
     }

@@ -9,15 +9,16 @@ class Version20230613150927 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
-        $this->addSql('CREATE TABLE "user" (id BIGSERIAL NOT NULL, login VARCHAR(32) NOT NULL, role VARCHAR(32) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE TABLE "user_profile" (user_id BIGINT DEFAULT NULL, firstname VARCHAR(128), middlename VARCHAR(128), lastname VARCHAR(128), gender VARCHAR(32), PRIMARY KEY(user_id))');
-        $this->addSql('CREATE TABLE "skill" (id BIGSERIAL NOT NULL, name VARCHAR(128) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, created_by BIGINT DEFAULT NULL, updated_by BIGINT DEFAULT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE TABLE "group" (id BIGSERIAL NOT NULL, name VARCHAR(128) NOT NULL, minimum_size INT NOT NULL, maximum_size INT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, created_by BIGINT DEFAULT NULL, updated_by BIGINT DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE "user" (id BIGSERIAL NOT NULL, login VARCHAR(32) NOT NULL, role VARCHAR(32) NOT NULL, user_profile_id BIGINT DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE "user_profile" (id BIGSERIAL NOT NULL, firstname VARCHAR(128), middlename VARCHAR(128), lastname VARCHAR(128), gender VARCHAR(32), PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE "skill" (id BIGSERIAL NOT NULL, name VARCHAR(128) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_by BIGINT DEFAULT NULL, updated_by BIGINT DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE "group" (id BIGSERIAL NOT NULL, name VARCHAR(128) NOT NULL, minimum_size INT NOT NULL, maximum_size INT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_by BIGINT DEFAULT NULL, updated_by BIGINT DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE student_group (student_id BIGINT DEFAULT NULL, group_id BIGINT DEFAULT NULL, PRIMARY KEY(student_id, group_id))');
         $this->addSql('CREATE TABLE teacher_skill (teacher_id BIGINT DEFAULT NULL, skill_id BIGINT DEFAULT NULL, PRIMARY KEY(teacher_id, skill_id))');
 
-        $this->addSql('ALTER TABLE user_profile ADD CONSTRAINT user_profile__user_id__fk FOREIGN KEY (user_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE "user" ADD CONSTRAINT user__user_profile_id__fk FOREIGN KEY (user_profile_id) REFERENCES "user_profile" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
 
+        $this->addSql('CREATE UNIQUE INDEX user__user_profile_id__idx ON "user" (user_profile_id)');
         $this->addSql('CREATE INDEX student_group__student_id__idx ON student_group (student_id)');
         $this->addSql('CREATE INDEX student_group__group_id__idx ON student_group (group_id)');
         $this->addSql('CREATE UNIQUE INDEX student_group__student_id__group_id__uniq ON student_group (student_id, group_id)');
@@ -38,5 +39,6 @@ class Version20230613150927 extends AbstractMigration
         $this->addSql('DROP TABLE "group"');
         $this->addSql('DROP TABLE skill');
         $this->addSql('DROP TABLE "user"');
+        $this->addSql('DROP TABLE "user_profile"');
     }
 }

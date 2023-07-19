@@ -10,10 +10,10 @@ use JetBrains\PhpStorm\ArrayShape;
 #[ORM\Entity]
 class UserProfile
 {
-    #[ORM\Column(name: 'user_id', type: 'bigint', unique: true)]
+    #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    private ?int $user_id = null;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 128, nullable: true)]
     private string $firstname;
@@ -27,18 +27,14 @@ class UserProfile
     #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private string $gender;
 
-    #[ORM\OneToOne(inversedBy: "userProfile", targetEntity: "User")]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
-    private $user;
-
-    public function getUserId(): int
+    public function getId(): int
     {
-        return $this->user_id;
+        return $this->id;
     }
 
-    public function setUserId(int $userId): void
+    public function setId(int $id): void
     {
-        $this->user_id = $userId;
+        $this->id = $id;
     }
 
     public function getFirstname(): string
@@ -79,5 +75,16 @@ class UserProfile
     public function setGender(string $gender): void
     {
         $this->gender = $gender;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'firstname' => $this->firstname,
+            'middlename' => $this->middlename,
+            'lastname' => $this->lastname,
+            'gender' => $this->gender
+        ];
     }
 }

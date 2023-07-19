@@ -10,6 +10,7 @@ use JetBrains\PhpStorm\ArrayShape;
 
 #[ORM\Table(name: '`user`')]
 #[ORM\Entity]
+#[ORM\Index(columns: ['user_profile_id'], name: 'user__user_profile_id__idx')]
 class User
 {
     #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
@@ -29,22 +30,17 @@ class User
     #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: false)]
     private DateTime $updatedAt;
 
-    #[ORM\OneToOne(mappedBy: "user", targetEntity: "UserProfile", cascade: ["persist"])]
+    #[ORM\OneToOne(targetEntity: "UserProfile")]
+    #[ORM\JoinColumn(name: 'user_profile_id', referencedColumnName: 'id')]
     private UserProfile|null $userProfile = null;
 
-    #[ORM\ManyToMany(targetEntity: 'User', mappedBy: 'skills')]
-    private Collection $teachers;
-
-    #[ORM\ManyToMany(targetEntity: 'Skill', inversedBy: 'teachers')]
+    #[ORM\ManyToMany(targetEntity: 'Skill')]
     #[ORM\JoinTable(name: 'teacher_skill')]
     #[ORM\JoinColumn(name: 'teacher_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'skill_id', referencedColumnName: 'id')]
     private Collection $skills;
 
-    #[ORM\ManyToMany(targetEntity: 'User', mappedBy: 'groups')]
-    private Collection $students;
-
-    #[ORM\ManyToMany(targetEntity: 'Group', inversedBy: 'students')]
+    #[ORM\ManyToMany(targetEntity: 'Group')]
     #[ORM\JoinTable(name: 'student_group')]
     #[ORM\JoinColumn(name: 'student_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
@@ -141,6 +137,7 @@ class User
         'updatedAt' => 'string',
         'skills' =>  [],
         'groups' =>  [],
+        'userProfile' => []
     ])]
     public function toArray(): array
     {
@@ -152,6 +149,7 @@ class User
             'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
             'skills' => array_map(static fn(Skill $skill) => $skill->toArray(), $this->skills->toArray()),
             'groups' => array_map(static fn(Group $group) => $group->toArray(), $this->groups->toArray()),
+            'userProfile' => $this->userProfile?->toArray(),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\UserProfileGender;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\ArrayShape;
@@ -24,8 +25,8 @@ class UserProfile
     #[ORM\Column(type: 'string', length: 128, nullable: true)]
     private string $lastname;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: true)]
-    private string $gender;
+    #[ORM\Column(type: 'string', length: 32, nullable: true, enumType: UserProfileGender::class)]
+    public UserProfileGender $gender;
 
     public function getId(): int
     {
@@ -67,12 +68,12 @@ class UserProfile
         $this->lastname = $lastname;
     }
 
-    public function getGender(): string
+    public function getGender(): UserProfileGender
     {
         return $this->gender;
     }
 
-    public function setGender(string $gender): void
+    public function setGender(UserProfileGender $gender): void
     {
         $this->gender = $gender;
     }

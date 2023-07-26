@@ -21,8 +21,8 @@ class User
     #[ORM\Column(type: 'string', length: 32, nullable: false)]
     private string $login;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: false)]
-    private string $role;
+    #[ORM\Column(type: 'string', length: 32, nullable: false, enumType: UserRole::class)]
+    private UserRole $role;
 
     #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
     private DateTime $createdAt;
@@ -73,12 +73,12 @@ class User
         $this->login = $login;
     }
 
-    public function getRole(): string
+    public function getRole(): UserRole
     {
         return $this->role;
     }
 
-    public function setRole(string $role): void
+    public function setRole(UserRole $role): void
     {
         $this->role = $role;
     }

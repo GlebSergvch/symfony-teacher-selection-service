@@ -22,7 +22,7 @@ class UserProfileManager
         $userProfile->setFirstname($userProfileDto->firstname);
         $userProfile->setMiddlename($userProfileDto->middlename);
         $userProfile->setLastname($userProfileDto->lastname);
-        $userProfile->setGender($userProfileDto->gender->value);
+        $userProfile->setGender($userProfileDto->gender);
 
 
 //        var_dump($userProfile->getUserId()); die();

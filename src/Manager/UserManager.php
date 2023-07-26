@@ -20,7 +20,7 @@ class UserManager
     {
         $user = new User();
         $user->setLogin($login);
-        $user->setRole($role->value);
+        $user->setRole($role);
         $user->setCreatedAt();
         $user->setUpdatedAt();
         $this->entityManager->persist($user);

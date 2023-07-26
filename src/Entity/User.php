@@ -43,9 +43,9 @@ class User
 //    #[ORM\InverseJoinColumn(name: 'skill_id', referencedColumnName: 'id')]
 //    private Collection $skills;
 
-//    #[ORM\ManyToOne(targetEntity: TeacherSkill::class)]
-//    #[JoinColumn(name: 'id', referencedColumnName: 'teacher_id', nullable: true)]
-//    private ?TeacherSkill $teacherSkill = null;
+    #[ORM\ManyToOne(targetEntity: TeacherSkill::class)]
+    #[JoinColumn(name: 'id', referencedColumnName: 'teacher_id', nullable: true)]
+    private ?TeacherSkill $teacherSkill = null;
 
     #[ORM\ManyToMany(targetEntity: 'Group')]
     #[ORM\JoinTable(name: 'student_group')]

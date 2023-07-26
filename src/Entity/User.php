@@ -2,15 +2,18 @@
 
 namespace App\Entity;
 
+use App\Enum\UserRole;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use JetBrains\PhpStorm\ArrayShape;
 
 #[ORM\Table(name: '`user`')]
 #[ORM\Entity]
-#[ORM\Index(columns: ['user_profile_id'], name: 'user__user_profile_id__idx')]
+//#[UniqueConstraint(name: "user__user_profile_id__uniq__idx", columns: ["user_profile_id"])]
 class User
 {
     #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
@@ -34,11 +37,15 @@ class User
     #[ORM\JoinColumn(name: 'user_profile_id', referencedColumnName: 'id')]
     private UserProfile|null $userProfile = null;
 
-    #[ORM\ManyToMany(targetEntity: 'Skill')]
-    #[ORM\JoinTable(name: 'teacher_skill')]
-    #[ORM\JoinColumn(name: 'teacher_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'skill_id', referencedColumnName: 'id')]
-    private Collection $skills;
+//    #[ORM\ManyToMany(targetEntity: 'Skill')]
+//    #[ORM\JoinTable(name: 'teacher_skill')]
+//    #[ORM\JoinColumn(name: 'teacher_id', referencedColumnName: 'id')]
+//    #[ORM\InverseJoinColumn(name: 'skill_id', referencedColumnName: 'id')]
+//    private Collection $skills;
+
+//    #[ORM\ManyToOne(targetEntity: TeacherSkill::class)]
+//    #[JoinColumn(name: 'id', referencedColumnName: 'teacher_id', nullable: true)]
+//    private ?TeacherSkill $teacherSkill = null;
 
     #[ORM\ManyToMany(targetEntity: 'Group')]
     #[ORM\JoinTable(name: 'student_group')]
@@ -111,11 +118,17 @@ class User
 
     public function addUserProfile(User $user, UserProfile $userProfile): void
     {
-//        var_dump($userProfile); die();
         $user->setUserProfile($userProfile);
     }
 
-    public function addSkill(Skill $skill): void
+//    public function addSkill(Skill $skill): void
+//    {
+//        if (!$this->skills->contains($skill)) {
+//            $this->skills->add($skill);
+//        }
+//    }
+
+    public function addTeacherSkill(Skill $skill): void
     {
         if (!$this->skills->contains($skill)) {
             $this->skills->add($skill);
@@ -147,7 +160,8 @@ class User
             'role' => $this->role,
             'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
-            'skills' => array_map(static fn(Skill $skill) => $skill->toArray(), $this->skills->toArray()),
+//            'skills' => array_map(static fn(Skill $skill) => $skill->toArray(), $this->skills->toArray()),
+//            'skills' => array_map(static fn(TeacherSkill $teacherSkill) => $teacherSkill->skill->toArray(), $this->teacherSkill->skill->toArray()),
             'groups' => array_map(static fn(Group $group) => $group->toArray(), $this->groups->toArray()),
             'userProfile' => $this->userProfile?->toArray(),
         ];

@@ -7,6 +7,7 @@ use App\Entity\Group;
 use App\Entity\Skill;
 use App\Entity\User;
 use App\Enum\UserProfileGender;
+use App\Enum\UserRole;
 use App\Manager\GroupManager;
 use App\Manager\SkillManager;
 use App\Manager\UserManager;
@@ -28,26 +29,36 @@ class WorldController extends AbstractController
 
     public function hello(): Response
     {
+
+//        $userProfileDto = new UserProfileDto();
+//        $userProfileDto->firstname = 'j';
+//        $userProfileDto->middlename = 'd';
+//        $userProfileDto->lastname = 'h';
+//        $userProfileDto->gender = UserProfileGender::MALE;
+//
+//        $user = $this->userBuilderService->createUserWithUserProfile('NewStud', UserRole::TEACHER, $userProfileDto);
+//        return $this->json($user->toArray());
+
 //        $skills = [
-//            'philosophy',
-//            'geography',
-//            'physic'
+//            1,
+//            2,
+//            3
 //        ];
-//        $user = $this->userBuilderService->createTeacherWithSkills('Tech Mr. Johns', $skills);
+//        $user = $this->userBuilderService->createTeacherWithSkills('Tech Mr. Cooper', $skills);
 //        return $this->json($user->toArray());
 
 
 //        $user = $this->userBuilderService->createStudentWithGroup('STUDENT');
 //        return $this->json($user->toArray());
 
-//        $userProfileDto = new UserProfileDto();
-//        $userProfileDto->firstname = 'John';
-//        $userProfileDto->middlename = 'Doe';
-//        $userProfileDto->lastname = 'James';
-//        $userProfileDto->gender = UserProfileGender::MALE;
+        $userProfileDto = new UserProfileDto();
+        $userProfileDto->firstname = 'Johne';
+        $userProfileDto->middlename = 'Does';
+        $userProfileDto->lastname = 'Jamese';
+        $userProfileDto->gender = UserProfileGender::MALE;
 //
-//        $user = $this->userBuilderService->createUserWithUserProfile('STUDENT', $userProfileDto);
-//        return $this->json($user->toArray());
+        $user = $this->userBuilderService->createUserWithUserProfile('NewStud', $userProfileDto);
+        return $this->json($user->toArray());
 
 //        $users = $this->userManager->findUsersByLogin('alex');
 //        return $this->json(array_map(static fn(User $user) => $user->toArray(), $users));
@@ -55,7 +66,7 @@ class WorldController extends AbstractController
 //        $skills = $this->skillManager->findSkillByName('skill1');
 //        return $this->json(array_map(static fn(Skill $skill) => $skill->toArray(), $skills));
 
-        $groups = $this->groupManager->findGroupByName('PS1');
-        return $this->json(array_map(static fn(Group $group) => $group->toArray(), $groups));
+//        $groups = $this->groupManager->findGroupByName('PS1');
+//        return $this->json(array_map(static fn(Group $group) => $group->toArray(), $groups));
     }
 }

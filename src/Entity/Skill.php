@@ -6,7 +6,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\ArrayShape;
 
-#[ORM\Table(name: 'skill')]
+#[ORM\Table(name: '`skill`')]
 #[ORM\Entity]
 class Skill
 {

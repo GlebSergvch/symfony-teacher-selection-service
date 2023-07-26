@@ -2,9 +2,14 @@
 
 namespace App\Entity;
 
-use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 
+#[ORM\Entity]
+#[ORM\Table(name: '`teacher_skill`')]
+#[UniqueConstraint(name: "teacher_skill__teacher_id__skill_id__uniq", columns: ["teacher_id", "skill_id"])]
 class TeacherSkill
 {
     #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
@@ -12,19 +17,19 @@ class TeacherSkill
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private int $id;
 
-    #[ORM\ManyToOne(targetEntity: 'User', inversedBy: 'teacherSkills')]
-    #[ORM\JoinColumn(name: 'teacher_id', referencedColumnName: 'id')]
-    private User $teacher;
+    #[ORM\Column(name: 'teacher_id', type: 'bigint')]
+    private int $teacher_id;
 
-    #[ORM\ManyToOne(targetEntity: 'Skill', inversedBy: 'skillTeachers')]
-    #[ORM\JoinColumn(name: 'skill_id', referencedColumnName: 'id')]
-    private Skill $skill;
+    #[ORM\Column(name: 'skill_id', type: 'bigint')]
+    private int $skill_id;
 
-    #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
-    private DateTime $createdAt;
+    #[ManyToOne(targetEntity: User::class)]
+    #[JoinColumn(name: 'teacher_id', referencedColumnName: 'id')]
+    private int $teacher;
 
-    #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: false)]
-    private DateTime $updatedAt;
+    #[ManyToOne(targetEntity: Skill::class)]
+    #[JoinColumn(name: 'skill_id', referencedColumnName: 'id')]
+    public Skill $skill;
 
     public function getId(): int
     {
@@ -36,39 +41,23 @@ class TeacherSkill
         $this->id = $id;
     }
 
-    public function getTeacher(): User
+    public function setTeacherId(int $teacherId): void
     {
-        return $this->teacher;
+        $this->teacher_id = $teacherId;
     }
 
-    public function setAuthor(User $teacher): void
+    public function getTeacherId(): int
     {
-        $this->teacher = $teacher;
+        return $this->teacher_id;
     }
 
-    public function getSkill(): Skill
+    public function setSkillId(int $skillId): void
     {
-        return $this->skill;
+        $this->skill_id = $skillId;
     }
 
-    public function setSkill(Skill $skill): void
+    public function getSkillId(): int
     {
-        $this->skill = $skill;
-    }
-
-    public function getCreatedAt(): DateTime {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(): void {
-        $this->createdAt = new DateTime();
-    }
-
-    public function getUpdatedAt(): DateTime {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(): void {
-        $this->updatedAt = new DateTime();
+        return $this->skill_id;
     }
 }

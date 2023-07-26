@@ -13,15 +13,17 @@ class Version20230613150927 extends AbstractMigration
         $this->addSql('CREATE TABLE "user_profile" (id BIGSERIAL NOT NULL, firstname VARCHAR(128), middlename VARCHAR(128), lastname VARCHAR(128), gender VARCHAR(32), PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE "skill" (id BIGSERIAL NOT NULL, name VARCHAR(128) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_by BIGINT DEFAULT NULL, updated_by BIGINT DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE "group" (id BIGSERIAL NOT NULL, name VARCHAR(128) NOT NULL, minimum_size INT NOT NULL, maximum_size INT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_by BIGINT DEFAULT NULL, updated_by BIGINT DEFAULT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE TABLE student_group (student_id BIGINT DEFAULT NULL, group_id BIGINT DEFAULT NULL, PRIMARY KEY(student_id, group_id))');
-        $this->addSql('CREATE TABLE teacher_skill (teacher_id BIGINT DEFAULT NULL, skill_id BIGINT DEFAULT NULL, PRIMARY KEY(teacher_id, skill_id))');
+        $this->addSql('CREATE TABLE student_group (id BIGSERIAL NOT NULL, student_id BIGINT DEFAULT NULL, group_id BIGINT DEFAULT NULL, PRIMARY KEY(student_id, group_id))');
+        $this->addSql('CREATE TABLE teacher_skill (id BIGSERIAL NOT NULL, teacher_id BIGINT DEFAULT NULL, skill_id BIGINT DEFAULT NULL, PRIMARY KEY(teacher_id, skill_id))');
 
         $this->addSql('ALTER TABLE "user" ADD CONSTRAINT user__user_profile_id__fk FOREIGN KEY (user_profile_id) REFERENCES "user_profile" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
 
-        $this->addSql('CREATE UNIQUE INDEX user__user_profile_id__idx ON "user" (user_profile_id)');
+        $this->addSql('CREATE UNIQUE INDEX user__user_profile_id__uniq__idx ON "user" (user_profile_id)');
+
         $this->addSql('CREATE INDEX student_group__student_id__idx ON student_group (student_id)');
         $this->addSql('CREATE INDEX student_group__group_id__idx ON student_group (group_id)');
-        $this->addSql('CREATE UNIQUE INDEX student_group__student_id__group_id__uniq ON student_group (student_id, group_id)');
+        $this->addSql('CREATE UNIQUE INDEX student_group__student_id__group_id__uniq ON "student_group" (student_id, group_id)');
+
         $this->addSql('ALTER TABLE student_group ADD CONSTRAINT student_group__student_id__fk FOREIGN KEY (student_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE student_group ADD CONSTRAINT student_group__group_id__fk FOREIGN KEY (group_id) REFERENCES "group" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
 

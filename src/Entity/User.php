@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Enum\UserRole;
+use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,9 +12,9 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use JetBrains\PhpStorm\ArrayShape;
 
-#[ORM\Table(name: '`user`')]
-#[ORM\Entity]
-//#[UniqueConstraint(name: "user__user_profile_id__uniq__idx", columns: ["user_profile_id"])]
+#[ORM\Table(name: '`user`', indexes: [])]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueConstraint(name: "user__user_profile_id__uniq__idx", columns: ["user_profile_id"])]
 class User
 {
     #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
@@ -43,21 +44,23 @@ class User
 //    #[ORM\InverseJoinColumn(name: 'skill_id', referencedColumnName: 'id')]
 //    private Collection $skills;
 
-    #[ORM\ManyToOne(targetEntity: TeacherSkill::class)]
-    #[JoinColumn(name: 'id', referencedColumnName: 'teacher_id', nullable: true)]
-    private ?TeacherSkill $teacherSkill = null;
+    #[ORM\OneToMany(mappedBy: 'teacher', targetEntity: TeacherSkill::class)]
+//    #[JoinColumn(name: 'id', referencedColumnName: 'teacher_id', nullable: true)]
+    private Collection $teacherSkills;
 
-    #[ORM\ManyToMany(targetEntity: 'Group')]
-    #[ORM\JoinTable(name: 'student_group')]
-    #[ORM\JoinColumn(name: 'student_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
-    private Collection $groups;
+//    #[ORM\ManyToMany(targetEntity: 'Group')]
+//    #[ORM\JoinTable(name: 'student_group')]
+//    #[ORM\JoinColumn(name: 'student_id', referencedColumnName: 'id')]
+//    #[ORM\InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
+//    private Collection $groups;
+
+    #[ORM\OneToMany(mappedBy: 'student', targetEntity: StudentGroup::class)]
+    private Collection $studentGroups;
 
     public function __construct()
     {
-//        $this->userProfile = new UserProfile();
-        $this->skills = new ArrayCollection();
-        $this->groups = new ArrayCollection();
+        $this->teacherSkills = new ArrayCollection();
+        $this->studentGroups = new ArrayCollection();
     }
 
     public function getId(): int
@@ -128,17 +131,17 @@ class User
 //        }
 //    }
 
-    public function addTeacherSkill(Skill $skill): void
+    public function addTeacherSkill(TeacherSkill $teacherSkill): void
     {
-        if (!$this->skills->contains($skill)) {
-            $this->skills->add($skill);
+        if (!$this->teacherSkills->contains($teacherSkill)) {
+            $this->teacherSkills->add($teacherSkill);
         }
     }
 
-    public function addGroup(Group $group): void
+    public function addStudentGroup(StudentGroup $studentGroup): void
     {
-        if (!$this->groups->contains($group)) {
-            $this->groups->add($group);
+        if (!$this->studentGroups->contains($studentGroup)) {
+            $this->studentGroups->add($studentGroup);
         }
     }
 
@@ -148,7 +151,7 @@ class User
         'role' => 'string',
         'createdAt' => 'string',
         'updatedAt' => 'string',
-        'skills' =>  [],
+        'skills' =>  ['string'],
         'groups' =>  [],
         'userProfile' => []
     ])]
@@ -160,9 +163,10 @@ class User
             'role' => $this->role,
             'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
-//            'skills' => array_map(static fn(Skill $skill) => $skill->toArray(), $this->skills->toArray()),
+            'skills' => array_map(static fn(TeacherSkill $teacherSkill) => $teacherSkill->getSkillName(), $this->teacherSkills->toArray()),
 //            'skills' => array_map(static fn(TeacherSkill $teacherSkill) => $teacherSkill->skill->toArray(), $this->teacherSkill->skill->toArray()),
-            'groups' => array_map(static fn(Group $group) => $group->toArray(), $this->groups->toArray()),
+            'groups' => array_map(static fn(StudentGroup $studentGroup) => $studentGroup->getGroupName(), $this->studentGroups->toArray()),
+//            'groups' => array_map(static fn(Group $group) => $group->toArray(), $this->groups->toArray()),
             'userProfile' => $this->userProfile?->toArray(),
         ];
     }

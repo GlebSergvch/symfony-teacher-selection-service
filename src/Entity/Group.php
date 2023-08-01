@@ -4,18 +4,25 @@ namespace App\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use JetBrains\PhpStorm\ArrayShape;
 
 #[ORM\Table(name: '`group`')]
 #[ORM\Entity]
+#[ORM\Index(columns: ['created_by'], name: 'group__created_by__idx')]
+#[ORM\Index(columns: ['updated_by'], name: 'group__updated_by__idx')]
 class Group
 {
+    const DEFAULT_MINIMUM_SIZE = 10;
+    const DEFAULT_MAXIMUM_SIZE = 20;
+
     #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 128, nullable: false)]
+    #[ORM\Column(type: 'string', length: 128, unique:true, nullable: false)]
     private string $name;
 
     #[ORM\Column(type: 'integer', nullable: false)]
@@ -30,11 +37,13 @@ class Group
     #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: false)]
     private DateTime $updatedAt;
 
-    #[ORM\Column(name: 'created_by', type: 'bigint', nullable: true)]
-    private DateTime $createdBy;
+    #[ManyToOne(targetEntity: User::class)]
+    #[JoinColumn(name: 'created_by', referencedColumnName: 'id')]
+    private User $createdBy;
 
-    #[ORM\Column(name: 'updated_by', type: 'bigint', nullable: true)]
-    private DateTime $updatedBy;
+    #[ManyToOne(targetEntity: User::class)]
+    #[JoinColumn(name: 'updated_by', referencedColumnName: 'id')]
+    private User $updatedBy;
 
     public function getName(): string
     {

@@ -11,6 +11,7 @@ use App\Enum\UserRole;
 use App\Manager\GroupManager;
 use App\Manager\SkillManager;
 use App\Manager\UserManager;
+use App\Repository\UserRepository;
 use App\Services\UserBuilderService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,9 +41,9 @@ class WorldController extends AbstractController
 //        return $this->json($user->toArray());
 
 //        $skills = [
-//            1,
-//            2,
-//            3
+//            'philosophy',
+//            'geography',
+//            'tpr'
 //        ];
 //        $user = $this->userBuilderService->createTeacherWithSkills('Tech Mr. Cooper', $skills);
 //        return $this->json($user->toArray());
@@ -68,5 +69,14 @@ class WorldController extends AbstractController
 
 //        $groups = $this->groupManager->findGroupByName('PS1');
 //        return $this->json(array_map(static fn(Group $group) => $group->toArray(), $groups));
+
+
+
+//        $response = new Response();
+//        $response->setContent(json_encode($this->userManager->getUsersByLogin($page ?? 1, $perPage ?? 10, 'Tech Mr. Cooper')));
+//
+//        return $response;
+
+//        return $this->userManager->getUsersByLogin($page ?? 1, $perPage ?? 10, 'Tech Mr. Cooper');
     }
 }

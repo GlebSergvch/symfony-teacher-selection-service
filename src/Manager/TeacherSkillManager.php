@@ -2,7 +2,9 @@
 
 namespace App\Manager;
 
+use App\Entity\Skill;
 use App\Entity\TeacherSkill;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TeacherSkillManager
@@ -11,14 +13,17 @@ class TeacherSkillManager
     {
     }
 
-    public function create(int $skillId, int $teacherId): TeacherSkill
+    public function create(User $teacher, Skill $skill): TeacherSkill
     {
         $teacherSkill = new TeacherSkill();
-        $teacherSkill->setTeacherId($teacherId);
-        $teacherSkill->setSkillId($skillId);
+        $teacherSkill->setTeacher($teacher);
+        $teacherSkill->setSkill($skill);
+        $teacherSkill->setCreatedAt();
+        $teacherSkill->setUpdatedAt();
         $this->entityManager->persist($teacherSkill);
         $this->entityManager->flush();
 
         return $teacherSkill;
     }
+
 }

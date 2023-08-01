@@ -17,8 +17,8 @@ class GroupManager
     {
         $group = new Group();
         $group->setName($groupName);
-        $group->setMinimumSize(12);
-        $group->setMaximumSize(23);
+        $group->setMinimumSize(Group::DEFAULT_MINIMUM_SIZE);
+        $group->setMaximumSize(Group::DEFAULT_MAXIMUM_SIZE);
         $group->setCreatedAt();
         $group->setUpdatedAt();
         $this->entityManager->persist($group);
@@ -30,5 +30,15 @@ class GroupManager
     public function findGroupByName(string $name): array
     {
         return $this->entityManager->getRepository(Group::class)->findBy(['name' => $name]);
+    }
+
+    public function findOrCreateGroup(string $groupName): Group
+    {
+        $group = $this->entityManager->getRepository(Group::class)->findOneBy(['name' => $groupName]);
+        if (!$group) {
+            $group = $this->create($groupName);
+        }
+
+        return $group;
     }
 }

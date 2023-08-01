@@ -28,4 +28,19 @@ class SkillManager
     {
         return $this->entityManager->getRepository(Skill::class)->findBy(['name' => $name]);
     }
+
+    public function findSkillById(int $id): array
+    {
+        return $this->entityManager->getRepository(Skill::class)->findBy(['id' => $id]);
+    }
+
+    public function findOrCreateSkill(string $skillName): Skill
+    {
+        $skill = $this->entityManager->getRepository(Skill::class)->findOneBy(['name' => $skillName]);
+        if (!$skill) {
+            $skill = $this->create($skillName);
+        }
+
+        return $skill;
+    }
 }

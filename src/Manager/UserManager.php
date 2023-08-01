@@ -4,8 +4,11 @@ namespace App\Manager;
 
 use App\Entity\Group;
 use App\Entity\Skill;
+use App\Entity\StudentGroup;
+use App\Entity\TeacherSkill;
 use App\Entity\User;
 use App\Enum\UserRole;
+use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -24,7 +27,7 @@ class UserManager
         $user->setCreatedAt();
         $user->setUpdatedAt();
         $this->entityManager->persist($user);
-//        $this->entityManager->flush();
+        $this->entityManager->flush();
 
         return $user;
     }
@@ -53,9 +56,15 @@ class UserManager
         $this->entityManager->flush();
     }
 
-    public function addGroup(User $student, Group $group): void
+    public function addTeacherSkill(User $teacher, TeacherSkill $teacherSkill): void
     {
-        $student->addGroup($group);
+        $teacher->addTeacherSkill($teacherSkill);
+        $this->entityManager->flush();
+    }
+
+    public function addStudentGroup(User $student, StudentGroup $group): void
+    {
+        $student->addStudentGroup($group);
         $this->entityManager->flush();
     }
 
@@ -72,5 +81,63 @@ class UserManager
         $repository = $this->entityManager->getRepository(User::class);
 
         return $repository->matching($criteria)->toArray();
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getUsers(int $page, int $perPage): array
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->entityManager->getRepository(User::class);
+//        var_dump($userRepository->getUsers($page, $perPage)); die();
+        return $userRepository->getUsers($page, $perPage);
+    }
+
+    public function getUsersByLogin(int $page, int $perPage, string $login): array
+    {
+        $userRepository = $this->entityManager->getRepository(User::class);
+//        var_dump($userRepository->findByLogin($page, $perPage, $login)); die();
+        return $userRepository->findByLogin($page, $perPage, $login);
+    }
+
+    public function saveUser(string $login): ?int
+    {
+        $user = new User();
+        $user->setLogin($login);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return $user->getId();
+    }
+
+    public function updateUser(int $userId, string $login): bool
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->entityManager->getRepository(User::class);
+        /** @var User $user */
+        $user = $userRepository->find($userId);
+        if ($user === null) {
+            return false;
+        }
+        $user->setLogin($login);
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    public function deleteUser(int $userId): bool
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->entityManager->getRepository(User::class);
+        /** @var User $user */
+        $user = $userRepository->find($userId);
+        if ($user === null) {
+            return false;
+        }
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
+
+        return true;
     }
 }

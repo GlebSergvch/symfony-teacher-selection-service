@@ -6,10 +6,12 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use JetBrains\PhpStorm\ArrayShape;
 
 #[ORM\Table(name: '`skill`')]
 #[ORM\Entity]
+#[UniqueConstraint(name: "skill__name__uniq__idx", columns: ["name"])]
 #[ORM\Index(columns: ['created_by'], name: 'skill__created_by__idx')]
 #[ORM\Index(columns: ['updated_by'], name: 'skill__updated_by__idx')]
 class Skill

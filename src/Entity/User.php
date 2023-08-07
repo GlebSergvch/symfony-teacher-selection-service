@@ -14,6 +14,7 @@ use JetBrains\PhpStorm\ArrayShape;
 
 #[ORM\Table(name: '`user`', indexes: [])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueConstraint(name: "user__login__uniq__idx", columns: ["login"])]
 #[UniqueConstraint(name: "user__user_profile_id__uniq__idx", columns: ["user_profile_id"])]
 class User
 {

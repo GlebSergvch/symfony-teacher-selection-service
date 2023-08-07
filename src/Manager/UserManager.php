@@ -101,10 +101,13 @@ class UserManager
         return $userRepository->findByLogin($page, $perPage, $login);
     }
 
-    public function saveUser(string $login): ?int
+    public function saveUser(string $login, string $role): ?int
     {
         $user = new User();
         $user->setLogin($login);
+        $user->setRole(UserRole::from($role));
+        $user->setCreatedAt();
+        $user->setUpdatedAt();
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
@@ -140,4 +143,14 @@ class UserManager
 
         return true;
     }
+
+//    public function saveUser(string $login): ?int
+//    {
+//        $user = new User();
+//        $user->setLogin($login);
+//        $this->entityManager->persist($user);
+//        $this->entityManager->flush();
+//
+//        return $user->getId();
+//    }
 }

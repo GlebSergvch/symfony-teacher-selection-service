@@ -26,3 +26,24 @@ services:
     App\Doctrine\MigrationEventSubscriber:
         tags:
             - { name: doctrine.event_subscriber, connection: default }
+
+    App\Service\GreeterService:
+        arguments:
+            $greet: 'Hello'
+
+    strong_formatter:
+        class: App\Service\FormatService
+        factory: [ 'App\Service\FormatServiceFactory', 'strongFormatService' ]
+
+    cite_formatter:
+        class: App\Service\FormatService
+        factory: [ '@App\Service\FormatServiceFactory', 'citeFormatService' ]
+
+    main_header_formatter:
+        class: App\Service\FormatService
+        factory: [ '@App\Service\FormatServiceFactory', 'headerFormatService' ]
+        arguments: [ 1 ]
+
+    App\Controller\WorldController:
+        arguments:
+            $formatService: '@cite_formatter'

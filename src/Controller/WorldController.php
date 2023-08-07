@@ -12,7 +12,9 @@ use App\Manager\GroupManager;
 use App\Manager\SkillManager;
 use App\Manager\UserManager;
 use App\Repository\UserRepository;
-use App\Services\UserBuilderService;
+use App\Service\FormatService;
+use App\Service\GreeterService;
+use App\Service\UserBuilderService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,7 +24,9 @@ class WorldController extends AbstractController
         private readonly UserBuilderService $userBuilderService,
         private readonly UserManager $userManager,
         private readonly SkillManager $skillManager,
-        private readonly GroupManager $groupManager
+        private readonly GroupManager $groupManager,
+        private readonly GreeterService $greeterService,
+        private readonly FormatService $formatService,
     )
     {
 
@@ -52,14 +56,14 @@ class WorldController extends AbstractController
 //        $user = $this->userBuilderService->createStudentWithGroup('STUDENT');
 //        return $this->json($user->toArray());
 
-        $userProfileDto = new UserProfileDto();
-        $userProfileDto->firstname = 'Johne';
-        $userProfileDto->middlename = 'Does';
-        $userProfileDto->lastname = 'Jamese';
-        $userProfileDto->gender = UserProfileGender::MALE;
-//
-        $user = $this->userBuilderService->createUserWithUserProfile('NewStud', $userProfileDto);
-        return $this->json($user->toArray());
+//        $userProfileDto = new UserProfileDto();
+//        $userProfileDto->firstname = 'Johne';
+//        $userProfileDto->middlename = 'Does';
+//        $userProfileDto->lastname = 'Jamese';
+//        $userProfileDto->gender = UserProfileGender::MALE;
+////
+//        $user = $this->userBuilderService->createUserWithUserProfile('NewStud', $userProfileDto);
+//        return $this->json($user->toArray());
 
 //        $users = $this->userManager->findUsersByLogin('alex');
 //        return $this->json(array_map(static fn(User $user) => $user->toArray(), $users));
@@ -78,5 +82,9 @@ class WorldController extends AbstractController
 //        return $response;
 
 //        return $this->userManager->getUsersByLogin($page ?? 1, $perPage ?? 10, 'Tech Mr. Cooper');
+
+        $result = $this->formatService->format($this->greeterService->greet('world'));
+
+        return new Response("<html><body>$result</body></html>");
     }
 }

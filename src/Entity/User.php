@@ -39,21 +39,8 @@ class User
     #[ORM\JoinColumn(name: 'user_profile_id', referencedColumnName: 'id')]
     private UserProfile|null $userProfile = null;
 
-//    #[ORM\ManyToMany(targetEntity: 'Skill')]
-//    #[ORM\JoinTable(name: 'teacher_skill')]
-//    #[ORM\JoinColumn(name: 'teacher_id', referencedColumnName: 'id')]
-//    #[ORM\InverseJoinColumn(name: 'skill_id', referencedColumnName: 'id')]
-//    private Collection $skills;
-
     #[ORM\OneToMany(mappedBy: 'teacher', targetEntity: TeacherSkill::class)]
-//    #[JoinColumn(name: 'id', referencedColumnName: 'teacher_id', nullable: true)]
     private Collection $teacherSkills;
-
-//    #[ORM\ManyToMany(targetEntity: 'Group')]
-//    #[ORM\JoinTable(name: 'student_group')]
-//    #[ORM\JoinColumn(name: 'student_id', referencedColumnName: 'id')]
-//    #[ORM\InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
-//    private Collection $groups;
 
     #[ORM\OneToMany(mappedBy: 'student', targetEntity: StudentGroup::class)]
     private Collection $studentGroups;
@@ -124,13 +111,6 @@ class User
     {
         $user->setUserProfile($userProfile);
     }
-
-//    public function addSkill(Skill $skill): void
-//    {
-//        if (!$this->skills->contains($skill)) {
-//            $this->skills->add($skill);
-//        }
-//    }
 
     public function addTeacherSkill(TeacherSkill $teacherSkill): void
     {

@@ -122,4 +122,9 @@ class UserProfile
             'gender' => $this->gender
         ];
     }
+
+    public function getFullname()
+    {
+        return trim("$this->lastname $this->firstname $this->middlename");
+    }
 }

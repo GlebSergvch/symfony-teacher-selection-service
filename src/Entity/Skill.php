@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\SkillRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
 use JetBrains\PhpStorm\ArrayShape;
 
 #[ORM\Table(name: '`skill`')]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: SkillRepository::class)]
 #[UniqueConstraint(name: "skill__name__uniq__idx", columns: ["name"])]
 #[ORM\Index(columns: ['created_by'], name: 'skill__created_by__idx')]
 #[ORM\Index(columns: ['updated_by'], name: 'skill__updated_by__idx')]
@@ -38,6 +39,11 @@ class Skill
     #[JoinColumn(name: 'updated_by', referencedColumnName: 'id')]
     private User $updatedBy;
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -64,7 +70,7 @@ class Skill
         $this->updatedAt = new DateTime();
     }
 
-    #[ArrayShape(['id' => 'int|null', 'name' => 'string', 'createdAt' => 'string', 'updatedAt' => 'string'])]
+    #[ArrayShape(['id' => 'int', 'name' => 'string', 'createdAt' => 'string', 'updatedAt' => 'string'])]
     public function toArray(): array
     {
         return [

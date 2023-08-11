@@ -4,6 +4,7 @@ namespace App\Controller\Api\v1;
 
 use App\Entity\User;
 use App\Manager\UserManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,8 +28,35 @@ class UserController extends AbstractController
         $page = $request->query->get('page');
         $users = $this->userManager->getUsers($page ?? self::DEFAULT_PAGE, $perPage ?? self::DEFAULT_PER_PAGE);
         $code = empty($users) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
-//        var_dump($users); die();
         return new JsonResponse(['users' => array_map(static fn(User $user) => $user->toArray(), $users)], $code);
+    }
+
+    #[Route(path: '/find-by-user-profile', methods: ['POST'])]
+    public function getUsersFindByUserProfile(Request $request)
+    {
+        $data = $request->request->get('filter');
+
+//        filter должен возвращать вложенность get('filter')
+//        $data['firstname'] = 'john';
+//        $data['lastname'] = 'doe';
+        $users = $this->userManager->getUsersByUserProfile($data,$page ?? self::DEFAULT_PAGE, $perPage ?? self::DEFAULT_PER_PAGE);
+        $code = empty($users) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
+        return new JsonResponse(['users' => array_map(static fn(User $user) => $user->toArray(), $users)], $code);
+    }
+
+    #[Route(path: '/find-login/{user_login}', methods: ['GET'])]
+    public function getUsersFindLoginAction(string $user_login): Response
+    {
+        $users = $this->userManager->getUsersByLogin($user_login,$page ?? self::DEFAULT_PAGE, $perPage ?? self::DEFAULT_PER_PAGE);
+        $code = empty($users) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
+        return new JsonResponse(['users' => array_map(static fn(User $user) => $user->toArray(), $users)], $code);
+    }
+
+    #[Route(path: '/by-login/{user_login}', methods: ['GET'], priority: 2)]
+    #[ParamConverter('user', options: ['mapping' => ['user_login' => 'login']])]
+    public function getUserByLoginAction(User $user): Response
+    {
+        return new JsonResponse(['user' => $user->toArray()], Response::HTTP_OK);
     }
 
     #[Route(path: '', methods: ['POST'])]
@@ -36,7 +64,6 @@ class UserController extends AbstractController
     {
         $login = $request->request->get('login');
         $role = $request->request->get('role');
-//        var_dump($login); die();
         $userId = $this->userManager->saveUser($login, $role);
         [$data, $code] = $userId === null ?
             [['success' => false], Response::HTTP_BAD_REQUEST] :

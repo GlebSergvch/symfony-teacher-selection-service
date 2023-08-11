@@ -34,12 +34,20 @@ class UserController extends AbstractController
     #[Route(path: '/find-by-user-profile', methods: ['POST'])]
     public function getUsersFindByUserProfile(Request $request)
     {
-        $data = $request->request->get('filter');
+        $filter = $request->request->get('filter');
+//        TODO findByUserProfile: добавить получение поля filter как вложенность:
+//        {
+//          "filter": {
+//              "firstname": "john"
+//                ...
+//          }
+//        }
 
-//        filter должен возвращать вложенность get('filter')
-//        $data['firstname'] = 'john';
-//        $data['lastname'] = 'doe';
-        $users = $this->userManager->getUsersByUserProfile($data,$page ?? self::DEFAULT_PAGE, $perPage ?? self::DEFAULT_PER_PAGE);
+
+//        filter должен возвращать вложенность
+//        $filter['firstname'] = 'john';
+//        $filter['lastname'] = 'doe';
+        $users = $this->userManager->getUsersByUserProfile($filter,$page ?? self::DEFAULT_PAGE, $perPage ?? self::DEFAULT_PER_PAGE);
         $code = empty($users) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
         return new JsonResponse(['users' => array_map(static fn(User $user) => $user->toArray(), $users)], $code);
     }

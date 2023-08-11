@@ -56,6 +56,10 @@ class UserRepository extends EntityRepository
         $qb->select('t')
             ->from($this->getClassName(), 't');
 
+        // TODO findByUserProfile: правильно ли передаётся аргумент $userProfileData. Может его нужно передавать как DTO ?
+        // на сколько корректен такой подход в query builder: foreach вместе с $qb->andWhere ?
+        // как получить готовый sql ? у меня получалось доставать только dql. это не удобно.
+
         if (count(array_values($userProfileData))) {
             $qb->leftJoin('t.userProfile', 'userProfile');
 

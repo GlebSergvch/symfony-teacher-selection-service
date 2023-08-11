@@ -27,15 +27,21 @@ class TeacherSkillController extends AbstractController
     }
 
     #[Route(path: '', methods: ['POST'])]
-    public function saveSkillAction(Request $request): Response
+    public function saveTeacherSkillAction(Request $request): Response
     {
         $studentId = $request->request->get('teacherId');
         $groupId = $request->request->get('skillId');
 
         $user = $this->userManager->getUserById($studentId);
-        $group = $this->skillManager->getSkillById($groupId);
+        $skill = $this->skillManager->getSkillById($groupId);
 
-        $teacherSkill = $this->teacherSkillManager->addTeacherSkill($user, $group);
+
+        // TODO  через присваивание setStudentId и setGroupId в Entity/TeacherSkill для $studentId и $groupId работать не получатеся.
+        // доктрина выдает ошибку и показывает эти поля как null.
+        // приходится присваивать сущности напрямую.
+        // в контексте доктрины так и нужно работать ?
+
+        $teacherSkill = $this->teacherSkillManager->addTeacherSkill($user, $skill);
         [$data, $code] = $teacherSkill === null ?
             [['success' => false], Response::HTTP_BAD_REQUEST] :
             [['success' => true, 'userId' => $teacherSkill], Response::HTTP_OK];

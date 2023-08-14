@@ -19,6 +19,11 @@ class UserManager
     {
     }
 
+    /**
+     * @param string $login
+     * @param UserRole $role
+     * @return User
+     */
     public function create(string $login, UserRole $role): User
     {
         $user = new User();
@@ -32,47 +37,63 @@ class UserManager
         return $user;
     }
 
+    /**
+     * @param User $user
+     * @return User
+     */
     public function flushUserWithUserProfile(User $user)
     {
-//        $this->entityManager->persist($user);
         $this->entityManager->flush();
 
         return $user;
     }
 
-    public function persistUser(User $user)
+    /**
+     * @param User $user
+     */
+    public function persistUser(User $user): void
     {
         $this->entityManager->persist($user);
     }
 
-    public function flushUser()
+    public function flushUser(): void
     {
         $this->entityManager->flush();
     }
 
-    public function addSkill(User $teacher, Skill $skill): void
-    {
-        $teacher->addSkill($skill);
-        $this->entityManager->flush();
-    }
-
+    /**
+     * @param User $teacher
+     * @param TeacherSkill $teacherSkill
+     */
     public function addTeacherSkill(User $teacher, TeacherSkill $teacherSkill): void
     {
         $teacher->addTeacherSkill($teacherSkill);
         $this->entityManager->flush();
     }
 
+    /**
+     * @param User $student
+     * @param StudentGroup $group
+     */
     public function addStudentGroup(User $student, StudentGroup $group): void
     {
         $student->addStudentGroup($group);
         $this->entityManager->flush();
     }
 
+    /**
+     * @param string $name
+     * @return User[]
+     */
     public function findUsersByLogin(string $name): array
     {
         return $this->entityManager->getRepository(User::class)->findBy(['login' => $name]);
     }
 
+    /**
+     * @param string $login
+     * @return User[]
+     */
     public function findUsersByCriteria(string $login)
     {
         $criteria = Criteria::create();
@@ -84,33 +105,74 @@ class UserManager
     }
 
     /**
+     * @param int $page
+     * @param int $perPage
      * @return User[]
      */
     public function getUsers(int $page, int $perPage): array
     {
         /** @var UserRepository $userRepository */
         $userRepository = $this->entityManager->getRepository(User::class);
-//        var_dump($userRepository->getUsers($page, $perPage)); die();
         return $userRepository->getUsers($page, $perPage);
     }
 
-    public function getUsersByLogin(int $page, int $perPage, string $login): array
+    /**
+     * @param string $login
+     * @param int $page
+     * @param int $perPage
+     * @return User[]
+     */
+    public function getUsersByLogin(string $login, int $page, int $perPage): array
     {
         $userRepository = $this->entityManager->getRepository(User::class);
-//        var_dump($userRepository->findByLogin($page, $perPage, $login)); die();
         return $userRepository->findByLogin($page, $perPage, $login);
     }
 
-    public function saveUser(string $login): ?int
+    /**
+     * @param array $data
+     * @param int $page
+     * @param int $perPage
+     * @return User[]
+     */
+    public function getUsersByUserProfile(array $data, int $page, int $perPage): array
+    {
+        $userRepository = $this->entityManager->getRepository(User::class);
+        return $userRepository->findByUserProfile($page, $perPage, $data);
+    }
+
+    /**
+     * @param int $id
+     * @return User
+     */
+    public function getUserById(int $id)
+    {
+        $userRepository = $this->entityManager->getRepository(User::class);
+        return $userRepository->findOneBy(['id' => $id]);
+    }
+
+    /**
+     * @param string $login
+     * @param string $role
+     * @return int|null
+     */
+    public function saveUser(string $login, string $role): ?int
     {
         $user = new User();
         $user->setLogin($login);
+        $user->setRole(UserRole::from($role));
+        $user->setCreatedAt();
+        $user->setUpdatedAt();
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
         return $user->getId();
     }
 
+    /**
+     * @param int $userId
+     * @param string $login
+     * @return bool
+     */
     public function updateUser(int $userId, string $login): bool
     {
         /** @var UserRepository $userRepository */
@@ -126,6 +188,10 @@ class UserManager
         return true;
     }
 
+    /**
+     * @param int $userId
+     * @return bool
+     */
     public function deleteUser(int $userId): bool
     {
         /** @var UserRepository $userRepository */
@@ -140,4 +206,14 @@ class UserManager
 
         return true;
     }
+
+//    public function saveUser(string $login): ?int
+//    {
+//        $user = new User();
+//        $user->setLogin($login);
+//        $this->entityManager->persist($user);
+//        $this->entityManager->flush();
+//
+//        return $user->getId();
+//    }
 }

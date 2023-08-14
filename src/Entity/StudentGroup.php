@@ -2,14 +2,16 @@
 
 namespace App\Entity;
 
+use App\Repository\StudentGroupRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\UniqueConstraint;
+use JetBrains\PhpStorm\ArrayShape;
 
 #[ORM\Table(name: '`student_group`')]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: StudentGroupRepository::class)]
 #[ORM\Index(columns: ['student_id'], name: 'student_group__student_id__idx')]
 #[ORM\Index(columns: ['group_id'], name: 'student_group__group_id__idx')]
 #[ORM\Index(columns: ['created_by'], name: 'student_group__created_by__idx')]
@@ -22,13 +24,10 @@ class StudentGroup
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private ?int $id = null;
 
-//    #[ManyToOne(targetEntity: User::class)]
-//    #[JoinColumn(name: 'student_id', referencedColumnName: 'id', nullable: false)]
+
     #[ORM\Column(name: 'student_id', type: 'bigint')]
     private ?int $student_id = null;
 
-//    #[ManyToOne(targetEntity: Group::class)]
-//    #[JoinColumn(name: 'group_id', referencedColumnName: 'id', nullable: false)]
 
     #[ORM\Column(name: 'group_id', type: 'bigint')]
     private ?int $group_id = null;
@@ -124,5 +123,17 @@ class StudentGroup
 
     public function setUpdatedAt(): void {
         $this->updatedAt = new DateTime();
+    }
+
+    #[ArrayShape(['id' => 'int|null', 'student' => 'string', 'group' => 'string', 'createdAt' => 'string', 'updatedAt' => 'string'])]
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'student' => $this->getStudent()->getuserProfile() ? $this->getStudent()->getuserProfile()?->getFullname() : $this->getStudent()->getLogin(),
+            'group' => $this->getGroup()->getName(),
+            'createdAt' => $this->updatedAt->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
+        ];
     }
 }

@@ -14,7 +14,10 @@ class UserProfileManager
     {
     }
 
-
+    /**
+     * @param UserProfileDto $userProfileDto
+     * @return UserProfile
+     */
     public function create(UserProfileDto $userProfileDto): UserProfile
     {
         $userProfile = new UserProfile();

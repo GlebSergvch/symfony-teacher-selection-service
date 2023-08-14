@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\TeacherSkillRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
@@ -9,7 +10,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use JetBrains\PhpStorm\ArrayShape;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: TeacherSkillRepository::class)]
 #[ORM\Table(name: '`teacher_skill`')]
 #[ORM\Index(columns: ['teacher_id'], name: 'teacher_skill__teacher_id__idx')]
 #[ORM\Index(columns: ['skill_id'], name: 'teacher_skill__skill_id__idx')]
@@ -101,12 +102,15 @@ class TeacherSkill
         return $this->skill;
     }
 
-    #[ArrayShape(['id' => 'int|null', 'teacher_id' => 'integer', 'skill_id' => 'integer'])]
+    #[ArrayShape(['id' => 'int', 'teacher' => 'string', 'skill' => 'string', 'createdAt' => 'string', 'updatedAt' => 'string'])]
     public function toArray(): array
     {
         return [
             'id' => $this->id,
-            'skill' => $this->getSkill()
+            'teacher' => $this->getTeacher()->getuserProfile() ? $this->getTeacher()->getuserProfile()?->getFullname() : $this->getTeacher()->getLogin(),
+            'skill' => $this->getSkill()->getName(),
+            'createdAt' => $this->updatedAt->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
         ];
     }
 

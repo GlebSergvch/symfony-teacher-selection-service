@@ -2,7 +2,7 @@
 
 namespace App\Manager;
 
-use App\Dto\UserProfileDto;
+use App\Dto\ManageUserProfileDTO;
 use App\Entity\Group;
 use App\Entity\Skill;
 use App\Entity\UserProfile;
@@ -15,10 +15,10 @@ class UserProfileManager
     }
 
     /**
-     * @param UserProfileDto $userProfileDto
+     * @param ManageUserProfileDTO $userProfileDto
      * @return UserProfile
      */
-    public function create(UserProfileDto $userProfileDto): UserProfile
+    public function create(ManageUserProfileDTO $userProfileDto): UserProfile
     {
         $userProfile = new UserProfile();
         $userProfile->setFirstname($userProfileDto->firstname);
@@ -31,5 +31,28 @@ class UserProfileManager
         $this->entityManager->persist($userProfile);
 //        $this->entityManager->flush();
         return $userProfile;
+    }
+
+    /**
+     * @param int $id
+     * @return UserProfile
+     */
+    public function getUserProfileById(int $id)
+    {
+        $userProfileRepository = $this->entityManager->getRepository(UserProfile::class);
+        return $userProfileRepository->findOneBy(['id' => $id]);
+    }
+
+    public function saveUserFromDTO(UserProfile $userProfile, ManageUserProfileDTO $manageUserProfileDTO): ?int
+    {
+        $userProfile->setFirstname($manageUserProfileDTO->firstname);
+        $userProfile->setLastname($manageUserProfileDTO->lastname);
+        $userProfile->setMiddlename($manageUserProfileDTO->middlename);
+        $userProfile->setGender($manageUserProfileDTO->gender);
+        $userProfile->setAge($manageUserProfileDTO->age);
+        $this->entityManager->persist($userProfile);
+        $this->entityManager->flush();
+
+        return $userProfile->getId();
     }
 }

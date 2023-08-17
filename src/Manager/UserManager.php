@@ -2,12 +2,14 @@
 
 namespace App\Manager;
 
+use App\Dto\ManageUserDTO;
 use App\Entity\Group;
 use App\Entity\Skill;
 use App\Entity\StudentGroup;
 use App\Entity\TeacherSkill;
 use App\Entity\User;
 use App\Enum\UserRole;
+use App\Enum\UserStatus;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -206,6 +208,21 @@ class UserManager
 
         return true;
     }
+
+    public function saveUserFromDTO(User $user, ManageUserDTO $manageUserDTO): ?int
+    {
+        $user->setLogin($manageUserDTO->login);
+        $user->setPassword($manageUserDTO->password);
+        $user->setRole($manageUserDTO->role);
+        $user->setStatus(UserStatus::ACTIVE);
+        $user->setCreatedAt();
+        $user->setUpdatedAt();
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return $user->getId();
+    }
+
 
 //    public function saveUser(string $login): ?int
 //    {

@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Dto\UserProfileDto;
+use App\Dto\ManageUserProfileDTO;
 use App\Entity\StudentGroup;
 use App\Entity\TeacherSkill;
 use App\Entity\User;
@@ -50,7 +50,7 @@ class UserBuilderService
         return $student;
     }
 
-    public function createUserWithUserProfile(string $login, UserProfileDto $userProfileDto): User
+    public function createUserWithUserProfile(string $login, ManageUserProfileDTO $userProfileDto): User
     {
         $userProfile = $this->userProfileManager->create($userProfileDto);
         $user = $this->userManager->create($login, UserRole::STUDENT);

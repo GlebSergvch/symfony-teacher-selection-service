@@ -27,8 +27,6 @@ class ManageUserProfileDTO
         #[Assert\NotBlank]
         #[Assert\GreaterThan(18)]
         public int $age = 0,
-
-        public bool $isActive = false,
     ) {
     }
 

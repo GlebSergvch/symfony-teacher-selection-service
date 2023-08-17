@@ -21,9 +21,6 @@ class ManageUserDTO
         public string|null $password = '',
 
         public bool $isActive = false,
-
-        #[Assert\Type('array')]
-        public array $followers = [],
     ) {
     }
 

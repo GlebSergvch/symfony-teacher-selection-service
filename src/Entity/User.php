@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Enum\UserRole;
+use App\Enum\UserStatus;
 use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,8 +27,14 @@ class User
     #[ORM\Column(type: 'string', length: 32, nullable: false)]
     private string $login;
 
+    #[ORM\Column(type: 'string', length: 32, nullable: false)]
+    private string $password;
+
     #[ORM\Column(type: 'string', length: 32, nullable: false, enumType: UserRole::class)]
     private UserRole $role;
+
+    #[ORM\Column(type: 'string', length: 32, nullable: false, enumType: UserStatus::class)]
+    private UserStatus $status;
 
     #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
     private DateTime $createdAt;
@@ -71,6 +78,16 @@ class User
         $this->login = $login;
     }
 
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
     public function getRole(): UserRole
     {
         return $this->role;
@@ -79,6 +96,16 @@ class User
     public function setRole(UserRole $role): void
     {
         $this->role = $role;
+    }
+
+    public function getStatus(): UserStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(UserStatus $status): void
+    {
+        $this->status = $status;
     }
 
     public function getCreatedAt(): DateTime {

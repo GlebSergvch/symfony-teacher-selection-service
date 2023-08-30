@@ -2,10 +2,17 @@
 
 namespace App\Controller\Api\v1;
 
+use App\Dto\ManageUserDTO;
+use App\Dto\ManageUserProfileDTO;
 use App\Entity\User;
+use App\Form\Type\CreateUserType;
+use App\Form\Type\UpdateUserProfileType;
+use App\Form\Type\UpdateUserType;
 use App\Manager\UserManager;
+use App\Manager\UserProfileManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +24,11 @@ class UserController extends AbstractController
     private const DEFAULT_PAGE = 0;
     private const DEFAULT_PER_PAGE = 20;
 
-    public function __construct(private readonly UserManager $userManager)
+    public function __construct(
+        private readonly UserManager $userManager,
+        private readonly UserProfileManager $userProfileManager,
+        private readonly FormFactoryInterface $formFactory
+    )
     {
     }
 
@@ -105,5 +116,57 @@ class UserController extends AbstractController
         $result = $this->userManager->updateUser($userId, $login);
 
         return new JsonResponse(['success' => $result], $result ? Response::HTTP_OK : Response::HTTP_NOT_FOUND);
+    }
+
+    #[Route(path: '/create-user-valid', name: 'create_user', methods: ['GET', 'POST'])]
+    #[Route(path: '/update-user-valid/{id}', name: 'update_user', methods: ['GET', 'PATCH'])]
+    public function manageUserAction(Request $request, string $_route, ?int $id = null): Response
+    {
+        if ($id) {
+            $user = $this->userManager->getUserById($id);
+            $dto = ManageUserDTO::fromEntity($user);
+        }
+
+        $form = $this->formFactory->create(
+            $_route === 'create_user' ? CreateUserType::class : UpdateUserType::class,
+            $dto ?? null,
+        );
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var ManageUserDTO $userDto */
+            $userDto = $form->getData();
+
+            $this->userManager->saveUserFromDTO($user ?? new User(), $userDto);
+        }
+
+        return $this->renderForm('manageUser.html.twig', [
+            'form' => $form,
+            'isNew' => $_route === 'create-user-valid',
+            'user' => $user ?? null,
+        ]);
+    }
+
+    #[Route(path: '/update-user-profile-valid/{id}', name: 'update_user_profile', methods: ['GET', 'PATCH'])]
+    public function updateUserProfileAction(Request $request, string $_route, int $id): Response
+    {
+        $userProfile = $this->userProfileManager->getUserProfileById($id);
+        $dto = ManageUserProfileDTO::fromEntity($userProfile);
+        $form = $this->formFactory->create(UpdateUserProfileType::class, $dto);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var ManageUserProfileDTO $userDto */
+            $userDto = $form->getData();
+
+            $this->userProfileManager->saveUserFromDTO($userProfile, $userDto);
+        }
+
+        return $this->renderForm('manageUser.html.twig', [
+            'form' => $form,
+            'isNew' => false,
+            'user' => $userProfile ?? null,
+        ]);
     }
 }

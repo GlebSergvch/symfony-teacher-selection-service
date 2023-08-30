@@ -32,6 +32,9 @@ class UserProfile
     #[ORM\Column(type: 'string', length: 32, nullable: true, enumType: UserProfileGender::class)]
     public UserProfileGender $gender;
 
+    #[ORM\Column(type: 'integer', nullable: false)]
+    private int $age;
+
     #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
     private DateTime $createdAt;
 
@@ -94,6 +97,16 @@ class UserProfile
     public function setGender(UserProfileGender $gender): void
     {
         $this->gender = $gender;
+    }
+
+    public function getAge(): int
+    {
+        return $this->age;
+    }
+
+    public function setAge(int $age): void
+    {
+        $this->age = $age;
     }
 
     public function getCreatedAt(): DateTime {

@@ -14,10 +14,14 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserManager
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly UserPasswordHasherInterface $userPasswordHasher,
+    )
     {
     }
 
@@ -161,7 +165,7 @@ class UserManager
     {
         $user = new User();
         $user->setLogin($login);
-        $user->setRole(UserRole::from($role));
+        $user->setRoles([UserRole::from($role)]);
         $user->setCreatedAt();
         $user->setUpdatedAt();
         $this->entityManager->persist($user);
@@ -212,8 +216,8 @@ class UserManager
     public function saveUserFromDTO(User $user, ManageUserDTO $manageUserDTO): ?int
     {
         $user->setLogin($manageUserDTO->login);
-        $user->setPassword($manageUserDTO->password);
-        $user->setRole($manageUserDTO->role);
+        $user->setPassword($this->userPasswordHasher->hashPassword($user, $manageUserDTO->password));
+        $user->setRoles($manageUserDTO->roles);
         $user->setStatus(UserStatus::ACTIVE);
         $user->setCreatedAt();
         $user->setUpdatedAt();
@@ -233,4 +237,16 @@ class UserManager
 //
 //        return $user->getId();
 //    }
+
+    public function deleteUserById(int $userId): bool
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->entityManager->getRepository(User::class);
+        /** @var User $user */
+        $user = $userRepository->find($userId);
+        if ($user === null) {
+            return false;
+        }
+        return $this->deleteUser($userId);
+    }
 }

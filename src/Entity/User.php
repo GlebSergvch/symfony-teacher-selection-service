@@ -33,6 +33,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 120, unique: true, nullable: false)]
     private string $password;
 
+    #[ORM\Column(type: 'string', length: 32, unique: true, nullable: true)]
+    private ?string $token = null;
+
     #[ORM\Column(type: 'json', length: 1024, nullable: false)]
     private array $roles = [];
 
@@ -89,6 +92,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): void
     {
         $this->password = $password;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(?string $token): void
+    {
+        $this->token = $token;
     }
 
     public function getSalt(): ?string

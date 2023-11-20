@@ -161,10 +161,11 @@ class UserManager
      * @param string $role
      * @return int|null
      */
-    public function saveUser(string $login, string $role): ?int
+    public function saveUser(string $login, string $password, string $role): ?int
     {
         $user = new User();
         $user->setLogin($login);
+        $user->setPassword($password);
         $user->setRoles([UserRole::from($role)]);
         $user->setCreatedAt();
         $user->setUpdatedAt();
@@ -248,5 +249,38 @@ class UserManager
             return false;
         }
         return $this->deleteUser($userId);
+    }
+
+    public function findUserByLogin(string $login): ?User
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->entityManager->getRepository(User::class);
+        /** @var User|null $user */
+        $user = $userRepository->findOneBy(['login' => $login]);
+
+        return $user;
+    }
+
+    public function updateUserToken(string $login): ?string
+    {
+        $user = $this->findUserByLogin($login);
+        if ($user === null) {
+            return false;
+        }
+        $token = base64_encode(random_bytes(20));
+        $user->setToken($token);
+        $this->entityManager->flush();
+
+        return $token;
+    }
+
+    public function findUserByToken(string $token): ?User
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->entityManager->getRepository(User::class);
+        /** @var User|null $user */
+        $user = $userRepository->findOneBy(['token' => $token]);
+
+        return $user;
     }
 }

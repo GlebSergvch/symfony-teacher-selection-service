@@ -8,15 +8,25 @@ security:
             entity:
                 class: App\Entity\User
                 property: login
+        backend_users:
+            memory:
+                users:
+                    admin:
+                        password: 'my_pass'
+                        roles: 'ROLE_ADMIN'
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        token:
+            pattern: ^/api/v1/token
+            security: false
         main:
             lazy: true
-            provider: app_user_provider
+#            provider: app_user_provider
 #            security: false
-            custom_authenticator: App\Security\AppLoginAuthenticator
+            stateless: true
+            custom_authenticator: App\Security\JWTTokenAuthenticator
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -29,8 +39,19 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
-        - { path: ^/api/v2/user, roles: ROLE_ADMIN, methods: [DELETE] }
         - { path: ^/api/v2/user, roles: ROLE_VIEW, methods: [GET] }
+        - { path: ^/api/v2/user, roles: ROLE_ADMIN, methods: [DELETE] }
+        - { path: ^/api/v1/user, roles: [ROLE_TEACHER, ROLE_ADMIN], methods: [POST] }
+        - { path: ^/api/v1/user, roles: [ROLE_STUDENT], methods: [GET] }
+
+        - { path: ^/api/v1/group, roles: [ROLE_TEACHER, ROLE_ADMIN], methods: [POST, PATCH, DELETE] }
+        - { path: ^/api/v1/group, roles: [ROLE_USER], methods: [GET] }
+        - { path: ^/api/v1/skill, roles: [ROLE_ADMIN], methods: [POST, PATCH, DELETE] }
+        - { path: ^/api/v1/skill, roles: [ROLE_USER], methods: [GET] }
+        - { path: ^/api/v1/student-group, roles: [ROLE_TEACHER, ROLE_ADMIN], methods: [POST, PATCH, DELETE] }
+        - { path: ^/api/v1/student-group, roles: [ROLE_USER], methods: [GET] }
+        - { path: ^/api/v1/teacher-skill, roles: [ROLE_TEACHER, ROLE_ADMIN], methods: [POST, PATCH, DELETE] }
+        - { path: ^/api/v1/teacher-skill, roles: [ROLE_USER], methods: [GET] }
 
     role_hierarchy:
         ROLE_ADMIN:

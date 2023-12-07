@@ -9,12 +9,6 @@ when@dev:
                 entity:
                     class: App\Entity\User
                     property: login
-            backend_users:
-                memory:
-                    users:
-                        admin:
-                            password: 'my_pass'
-                            roles: 'ROLE_ADMIN'
         firewalls:
             dev:
                 pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -24,8 +18,7 @@ when@dev:
                 security: false
             main:
                 lazy: true
-    #            provider: app_user_provider
-    #            security: false
+                provider: app_user_provider
                 stateless: true
                 custom_authenticator: App\Security\JWTTokenAuthenticator
 

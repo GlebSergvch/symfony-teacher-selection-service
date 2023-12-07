@@ -12,26 +12,32 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use JetBrains\PhpStorm\ArrayShape;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Table(name: '`user`', indexes: [])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueConstraint(name: "user__login__uniq__idx", columns: ["login"])]
+#[UniqueConstraint(name: "user__password__uniq__idx", columns: ["password"])]
 #[UniqueConstraint(name: "user__user_profile_id__uniq__idx", columns: ["user_profile_id"])]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: false)]
+    #[ORM\Column(type: 'string', length: 32, unique: true, nullable: false)]
     private string $login;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: false)]
+    #[ORM\Column(type: 'string', length: 120, unique: true, nullable: false)]
     private string $password;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: false, enumType: UserRole::class)]
-    private UserRole $role;
+    #[ORM\Column(type: 'string', length: 32, unique: true, nullable: true)]
+    private ?string $token = null;
+
+    #[ORM\Column(type: 'json', length: 1024, nullable: false)]
+    private array $roles = [];
 
     #[ORM\Column(type: 'string', length: 32, nullable: false, enumType: UserStatus::class)]
     private UserStatus $status;
@@ -88,14 +94,53 @@ class User
         $this->password = $password;
     }
 
-    public function getRole(): UserRole
+    public function getToken(): ?string
     {
-        return $this->role;
+        return $this->token;
     }
 
-    public function setRole(UserRole $role): void
+    public function setToken(?string $token): void
     {
-        $this->role = $role;
+        $this->token = $token;
+    }
+
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    public function eraseCredentials(): void
+    {
+    }
+
+    public function getUsername(): string
+    {
+        return $this->login;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->login;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param string[] $roles
+     */
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
     }
 
     public function getStatus(): UserStatus
@@ -157,6 +202,7 @@ class User
         'id' => 'int|null',
         'login' => 'string',
         'role' => 'string',
+        'password' => 'string',
         'createdAt' => 'string',
         'updatedAt' => 'string',
         'skills' =>  ['string'],
@@ -168,7 +214,8 @@ class User
         return [
             'id' => $this->id,
             'login' => $this->login,
-            'role' => $this->role,
+            'role' => $this->roles,
+            'password' => $this->password,
             'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
             'skills' => array_map(static fn(TeacherSkill $teacherSkill) => $teacherSkill->getSkillName(), $this->teacherSkills->toArray()),

@@ -30,3 +30,7 @@ services:
     App\Service\GreeterService:
         arguments:
             $greet: 'Hello'
+
+    App\Service\AuthService:
+        arguments:
+            $tokenTTL: '%env(JWT_TTL_SEC)%'

@@ -27,7 +27,7 @@ class StudentGroupController extends AbstractController
     }
 
     #[Route(path: '', methods: ['POST'])]
-    public function saveSkillAction(Request $request): Response
+    public function saveStudentGroupAction(Request $request): Response
     {
         $studentId = $request->request->get('studentId');
         $groupId = $request->request->get('groupId');

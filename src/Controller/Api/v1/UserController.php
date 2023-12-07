@@ -78,12 +78,24 @@ class UserController extends AbstractController
         return new JsonResponse(['user' => $user->toArray()], Response::HTTP_OK);
     }
 
+//    #[Route(path: '', methods: ['POST'])]
+//    public function saveUserAction(Request $request): Response
+//    {
+//        $login = $request->request->get('login');
+//        $role = $request->request->get('role');
+//        $userId = $this->userManager->saveUser($login, $role);
+//        [$data, $code] = $userId === null ?
+//            [['success' => false], Response::HTTP_BAD_REQUEST] :
+//            [['success' => true, 'userId' => $userId], Response::HTTP_OK];
+//
+//        return new JsonResponse($data, $code);
+//    }
+
     #[Route(path: '', methods: ['POST'])]
     public function saveUserAction(Request $request): Response
     {
-        $login = $request->request->get('login');
-        $role = $request->request->get('role');
-        $userId = $this->userManager->saveUser($login, $role);
+        $saveUserDTO = ManageUserDTO::fromRequest($request);
+        $userId = $this->userManager->saveUserFromDTO(new User(), $saveUserDTO);
         [$data, $code] = $userId === null ?
             [['success' => false], Response::HTTP_BAD_REQUEST] :
             [['success' => true, 'userId' => $userId], Response::HTTP_OK];

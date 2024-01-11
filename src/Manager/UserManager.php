@@ -157,6 +157,16 @@ class UserManager
     }
 
     /**
+     * @param int $id
+     * @return User
+     */
+    public function getUserByLoginRole(string $login, UserRole $role)
+    {
+        $userRepository = $this->entityManager->getRepository(User::class);
+        return $userRepository->findTeacherByLogin($login, $role);
+    }
+
+    /**
      * @param string $login
      * @param string $role
      * @return int|null

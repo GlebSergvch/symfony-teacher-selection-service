@@ -7,10 +7,17 @@ use App\Entity\TeacherSkill;
 use App\Entity\User;
 use App\Repository\TeacherSkillRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
+use Doctrine\DBAL\Connection;
 
 class TeacherSkillManager
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private SkillManager $skillManager,
+        private UserManager $userManager,
+        private Security $security
+    )
     {
     }
 
@@ -28,6 +35,20 @@ class TeacherSkillManager
         $teacherSkill->setUpdatedAt();
         $this->entityManager->persist($teacherSkill);
         $this->entityManager->flush();
+
+        return $teacherSkill;
+    }
+
+    /**
+     * @param string $skillName
+     * @return Skill
+     */
+    public function findOrCreateTeacherSkill(User $user, Skill $skill): TeacherSkill
+    {
+        $teacherSkill = $this->entityManager->getRepository(TeacherSkill::class)->findOneBy(['teacher_id' => $user->getId(), 'skill_id' => $skill->getId()]);
+        if (!$teacherSkill) {
+            $teacherSkill = $this->create($user, $skill);
+        }
 
         return $teacherSkill;
     }
@@ -78,6 +99,19 @@ class TeacherSkillManager
         $this->entityManager->remove($teacherSkill);
         $this->entityManager->flush();
 
+        return true;
+    }
+
+    public function addTeacherSkills(array $skills)
+    {
+        $skillRepository = $this->entityManager->getRepository(Skill::class);
+        foreach ($skills as $skillName) {
+            $skill = $skillRepository->findOneBy(['name' => $skillName]);
+            if (!$skill) {
+                $skill = $this->skillManager->saveSkill($skillName);
+            }
+            //...
+        }
         return true;
     }
 

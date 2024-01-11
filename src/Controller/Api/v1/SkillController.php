@@ -24,7 +24,7 @@ class SkillController extends AbstractController
     public function saveSkillAction(Request $request): Response
     {
         $skillName = $request->request->get('name');
-        $skillId = $this->skillManager->saveSkill($skillName);
+        $skillId = $this->skillManager->saveSkill($skillName)->getId();
         [$data, $code] = $skillId === null ?
             [['success' => false], Response::HTTP_BAD_REQUEST] :
             [['success' => true, 'userId' => $skillId], Response::HTTP_OK];

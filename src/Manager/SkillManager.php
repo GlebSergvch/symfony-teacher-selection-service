@@ -33,7 +33,7 @@ class SkillManager
      * @param string $skillName
      * @return int
      */
-    public function saveSkill(string $skillName): int
+    public function saveSkill(string $skillName): Skill
     {
         $skill = new Skill();
         $skill->setName($skillName);
@@ -42,7 +42,7 @@ class SkillManager
         $this->entityManager->persist($skill);
         $this->entityManager->flush();
 
-        return $skill->getId();
+        return $skill;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Dto;
 
 use App\Enum\UserRole;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\User;
 
@@ -13,8 +14,8 @@ class ManageUserDTO
         #[Assert\Length(max: 32)]
         public string $login = '',
 
-        #[Assert\NotBlank]
-        public UserRole|null $role = null,
+        #[Assert\Type('array')]
+        public array $roles = [],
 
         #[Assert\NotBlank]
         #[Assert\Length(max: 32)]
@@ -28,7 +29,18 @@ class ManageUserDTO
     {
         return new self(...[
             'login' => $user->getLogin(),
-            'password' => $user->getPassword()
+            'password' => $user->getPassword(),
+            'roles' => $user->getRoles()
         ]);
+    }
+
+    public static function fromRequest(Request $request): self
+    {
+        return new self(
+            login: $request->request->get('login') ?? $request->query->get('login'),
+            roles: $request->request->get('roles') ?? $request->query->get('roles') ?? [],
+            password: $request->request->get('password') ?? $request->query->get('password'),
+            isActive: $request->request->get('isActive') ?? $request->query->get('isActive'),
+        );
     }
 }

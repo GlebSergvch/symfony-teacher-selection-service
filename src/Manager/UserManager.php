@@ -14,10 +14,14 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserManager
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly UserPasswordHasherInterface $userPasswordHasher,
+    )
     {
     }
 
@@ -157,11 +161,12 @@ class UserManager
      * @param string $role
      * @return int|null
      */
-    public function saveUser(string $login, string $role): ?int
+    public function saveUser(string $login, string $password, string $role): ?int
     {
         $user = new User();
         $user->setLogin($login);
-        $user->setRole(UserRole::from($role));
+        $user->setPassword($password);
+        $user->setRoles([UserRole::from($role)]);
         $user->setCreatedAt();
         $user->setUpdatedAt();
         $this->entityManager->persist($user);
@@ -212,8 +217,8 @@ class UserManager
     public function saveUserFromDTO(User $user, ManageUserDTO $manageUserDTO): ?int
     {
         $user->setLogin($manageUserDTO->login);
-        $user->setPassword($manageUserDTO->password);
-        $user->setRole($manageUserDTO->role);
+        $user->setPassword($this->userPasswordHasher->hashPassword($user, $manageUserDTO->password));
+        $user->setRoles($manageUserDTO->roles);
         $user->setStatus(UserStatus::ACTIVE);
         $user->setCreatedAt();
         $user->setUpdatedAt();
@@ -233,4 +238,49 @@ class UserManager
 //
 //        return $user->getId();
 //    }
+
+    public function deleteUserById(int $userId): bool
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->entityManager->getRepository(User::class);
+        /** @var User $user */
+        $user = $userRepository->find($userId);
+        if ($user === null) {
+            return false;
+        }
+        return $this->deleteUser($userId);
+    }
+
+    public function findUserByLogin(string $login): ?User
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->entityManager->getRepository(User::class);
+        /** @var User|null $user */
+        $user = $userRepository->findOneBy(['login' => $login]);
+
+        return $user;
+    }
+
+    public function updateUserToken(string $login): ?string
+    {
+        $user = $this->findUserByLogin($login);
+        if ($user === null) {
+            return false;
+        }
+        $token = base64_encode(random_bytes(20));
+        $user->setToken($token);
+        $this->entityManager->flush();
+
+        return $token;
+    }
+
+    public function findUserByToken(string $token): ?User
+    {
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->entityManager->getRepository(User::class);
+        /** @var User|null $user */
+        $user = $userRepository->findOneBy(['token' => $token]);
+
+        return $user;
+    }
 }

@@ -35,6 +35,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
 RUN docker-php-ext-install -j$(getconf _NPROCESSORS_ONLN) \
     intl \
+    pcntl \
     gd \
     bcmath \
     pdo_pgsql \

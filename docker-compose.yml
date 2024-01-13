@@ -51,6 +51,18 @@ services:
       - dump:/app/dump
       - postgresql_test:/var/lib/postgresql/data
 
+  rabbitmq:
+    image: rabbitmq:3.7.5-management
+    working_dir: /app
+    hostname: rabbit-mq
+    container_name: 'rabbit-mq'
+    ports:
+      - 15672:15672
+      - 5672:5672
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+
 volumes:
   dump:
   postgresql:

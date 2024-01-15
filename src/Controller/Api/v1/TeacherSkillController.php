@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api\v1;
 
+use App\Client\StatsdAPIClient;
 use App\Entity\TeacherSkill;
 use App\Entity\User;
 use App\Enum\UserRole;
@@ -25,7 +26,8 @@ class TeacherSkillController extends AbstractController
         private readonly TeacherSkillManager $teacherSkillManager,
         private readonly UserManager $userManager,
         private readonly SkillManager $skillManager,
-        private readonly TeacherSkillService $teacherSkillService
+        private readonly TeacherSkillService $teacherSkillService,
+        private readonly StatsdAPIClient $statsdAPIClient,
     )
     {
     }
@@ -77,6 +79,7 @@ class TeacherSkillController extends AbstractController
     #[Route(path: '/add-teacher-skill', methods: ['POST'])]
     public function addTeacherSkills(Request $request)
     {
+        $this->statsdAPIClient->increment('add_teacher_skill');
         $data = json_decode($request->getContent(), true);
         $teachers = $data['users'];
         $skills = $data['skills'];

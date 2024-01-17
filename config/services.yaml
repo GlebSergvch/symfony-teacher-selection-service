@@ -40,3 +40,7 @@ services:
             - graphite
             - 8125
             - my_app
+
+    App\Service\AsyncService:
+        calls:
+            - [ 'registerProducer', [ !php/const App\Service\AsyncService::ADD_TEACHERS_SKILLS, '@old_sound_rabbit_mq.add_teachers_skills_producer' ] ]

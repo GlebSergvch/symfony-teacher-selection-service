@@ -1,0 +1,17 @@
+producers:
+  add_teachers_skills:
+    connection: default
+    exchange_options: {name: 'old_sound_rabbit_mq.add_teachers_skills', type: direct}
+
+consumers:
+  add_teachers_skills:
+    connection: default
+    exchange_options: {name: 'old_sound_rabbit_mq.add_teachers_skills', type: direct}
+    queue_options: {name: 'old_sound_rabbit_mq.consumer.add_teachers_skills'}
+    callback: App\Consumer\AddTeachersSkills\Consumer
+    idle_timeout: 300
+    idle_timeout_exit_code: 0
+    graceful_max_execution:
+      timeout: 1800
+      exit_code: 0
+    qos_options: {prefetch_size: 0, prefetch_count: 1, global: false}

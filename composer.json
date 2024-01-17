@@ -11,6 +11,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.15",
         "lexik/jwt-authentication-bundle": "^2.19",
+        "php-amqplib/rabbitmq-bundle": "*",
         "sensio/framework-extra-bundle": "^6.2",
         "slickdeals/statsd": "^3.2",
         "symfony/console": "6.3.*",

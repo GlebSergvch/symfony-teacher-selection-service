@@ -10,6 +10,7 @@ when@dev:
                     class: App\Entity\User
                     property: login
         firewalls:
+            security: false
             dev:
                 pattern: ^/(_(profiler|wdt)|css|images|js)/
                 security: false

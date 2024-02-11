@@ -34,13 +34,14 @@ class Consumer implements ConsumerInterface
             return $this->reject($e->getMessage());
         }
 
-        $userRepository = $this->entityManager->getRepository(User::class);
-        $user = $userRepository->find($message->getUserId());
-        if (!($user instanceof User)) {
-            return $this->reject(sprintf('User ID %s was not found', $message->getUserId()));
+        $teachers = $message->getTeachers();
+        $skills = $message->getSkills();
+
+        if (!$teachers || !$skills) {
+            return $this->reject(sprintf('empty values'));
         }
 
-        $this->subscriptionService->addTeachersSkills(['my_user7', 'my_user4'], ['dsvv', 'mathematics', 'ereee']);
+//        $this->subscriptionService->addTeachersSkills($teachers, $skills);
 
         $this->entityManager->clear();
         $this->entityManager->getConnection()->close();

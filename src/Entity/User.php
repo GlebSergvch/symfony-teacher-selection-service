@@ -118,6 +118,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->token = $token;
     }
 
+    public function getTeacherSkills()
+    {
+        return $this->teacherSkills;
+    }
+
     public function getSalt(): ?string
     {
         return null;

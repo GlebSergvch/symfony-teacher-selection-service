@@ -1,14 +1,10 @@
 <?php
 
-namespace App\Consumer\AddTeachersSkills;
+namespace App\Consumer\SendSmsNotification;
 
-use App\Consumer\AddTeachersSkills;
-use App\Consumer\AddTeachersSkills\Input\Message;
+use App\Consumer\SendSmsNotification\Input\Message;
 use App\Entity\User;
-use App\Manager\UserManager;
-use App\Repository\UserRepository;
-use App\Service\TeacherSkillService;
-use App\Service\UserBuilderService;
+use App\Manager\SmsNotificationManager;
 use Doctrine\ORM\EntityManagerInterface;
 use JsonException;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
@@ -20,8 +16,7 @@ class Consumer implements ConsumerInterface
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ValidatorInterface $validator,
-        private readonly TeacherSkillService $subscriptionService,
-        private readonly UserManager $userManager
+        private readonly SmsNotificationManager $smsNotificationManager,
     )
     {
     }
@@ -38,19 +33,14 @@ class Consumer implements ConsumerInterface
             return $this->reject($e->getMessage());
         }
 
-        $teachers = $message->getTeachers();
-        $skills = $message->getSkills();
+        $userRepository = $this->entityManager->getRepository(User::class);
+        $user = $userRepository->find($message->getUserId());
 
-        if (!$teachers || !$skills) {
-            return $this->reject(sprintf('empty values'));
+        if (!($user instanceof User)) {
+            return $this->reject(sprintf('User ID %s was not found', $message->getUserId()));
         }
 
-        $this->subscriptionService->addTeachersSkills($teachers, $skills);
-
-//        foreach ($teachers as $teacher) {
-//            $user = $this->userManager->findUserByLogin($teacher);
-//            $skills = $user->getTeacherSkills();
-//        }
+        $this->smsNotificationManager->saveSmsNotification($user->getPhone(), $message->getText());
 
         $this->entityManager->clear();
         $this->entityManager->getConnection()->close();

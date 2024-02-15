@@ -44,3 +44,4 @@ services:
     App\Service\AsyncService:
         calls:
             - [ 'registerProducer', [ !php/const App\Service\AsyncService::ADD_TEACHERS_SKILLS, '@old_sound_rabbit_mq.add_teachers_skills_producer' ] ]
+            - [ 'registerProducer', [ !php/const App\Service\AsyncService::SEND_NOTIFICATION,    '@old_sound_rabbit_mq.send_notification_producer'] ]

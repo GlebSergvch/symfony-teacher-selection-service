@@ -3,6 +3,7 @@
 namespace App\Controller\Api\v1;
 
 use App\Client\StatsdAPIClient;
+use App\Dto\SendNotificationDTO;
 use App\Dto\TeacherSkillDto;
 use App\Entity\TeacherSkill;
 use App\Entity\User;
@@ -101,10 +102,11 @@ class TeacherSkillController extends AbstractController
         $teachers = $data['users'];
         $skills = $data['skills'];
 
+        $this->userManager->sendNewSkillNotification($teachers, $skills);
 
-        $message = (new TeacherSkillDto($teachers, $skills))->toAMQPMessage();
-        $result = $this->asyncService->publishToExchange(AsyncService::ADD_TEACHERS_SKILLS, $message);
+        $messageTeacherSkill = (new TeacherSkillDto($teachers, $skills))->toAMQPMessage();
+        $result = $this->asyncService->publishToExchange(AsyncService::ADD_TEACHERS_SKILLS, $messageTeacherSkill);
 
-        return new JsonResponse(true, 200);
+        return new JsonResponse($result, 200);
     }
 }

@@ -88,7 +88,7 @@ class UserRepository extends EntityRepository
      * @return float|int|mixed|string|null
      * @throws NonUniqueResultException
      */
-    public function findTeacherByLogin(string $login, UserRole $role)
+    public function findTeacherByLogin(string $login)
     {
 
         $qb = $this->getEntityManager()->createQueryBuilder();

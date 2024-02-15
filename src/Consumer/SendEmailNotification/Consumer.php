@@ -1,14 +1,10 @@
 <?php
 
-namespace App\Consumer\AddTeachersSkills;
+namespace App\Consumer\SendEmailNotification;
 
-use App\Consumer\AddTeachersSkills;
-use App\Consumer\AddTeachersSkills\Input\Message;
+use App\Consumer\SendEmailNotification\Input\Message;
 use App\Entity\User;
-use App\Manager\UserManager;
-use App\Repository\UserRepository;
-use App\Service\TeacherSkillService;
-use App\Service\UserBuilderService;
+use App\Manager\EmailNotificationManager;
 use Doctrine\ORM\EntityManagerInterface;
 use JsonException;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
@@ -20,8 +16,7 @@ class Consumer implements ConsumerInterface
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ValidatorInterface $validator,
-        private readonly TeacherSkillService $subscriptionService,
-        private readonly UserManager $userManager
+        private readonly EmailNotificationManager $emailNotificationManager,
     )
     {
     }
@@ -38,19 +33,13 @@ class Consumer implements ConsumerInterface
             return $this->reject($e->getMessage());
         }
 
-        $teachers = $message->getTeachers();
-        $skills = $message->getSkills();
-
-        if (!$teachers || !$skills) {
-            return $this->reject(sprintf('empty values'));
+        $userRepository = $this->entityManager->getRepository(User::class);
+        $user = $userRepository->find($message->getUserId());
+        if (!($user instanceof User)) {
+            return $this->reject(sprintf('User ID %s was not found', $message->getUserId()));
         }
 
-        $this->subscriptionService->addTeachersSkills($teachers, $skills);
-
-//        foreach ($teachers as $teacher) {
-//            $user = $this->userManager->findUserByLogin($teacher);
-//            $skills = $user->getTeacherSkills();
-//        }
+        $this->emailNotificationManager->saveEmailNotification($user->getEmail(), $message->getText());
 
         $this->entityManager->clear();
         $this->entityManager->getConnection()->close();

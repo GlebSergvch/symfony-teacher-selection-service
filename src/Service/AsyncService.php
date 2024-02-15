@@ -7,6 +7,7 @@ use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 class AsyncService
 {
     public const ADD_TEACHERS_SKILLS = 'add_teachers_skills';
+    public const SEND_NOTIFICATION = 'send_notification';
 
     /** @var ProducerInterface[] */
     private array $producers;

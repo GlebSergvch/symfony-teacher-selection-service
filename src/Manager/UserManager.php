@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Dto\ManageUserDTO;
+use App\Dto\SendNotificationDTO;
 use App\Entity\Group;
 use App\Entity\Skill;
 use App\Entity\StudentGroup;
@@ -11,6 +12,7 @@ use App\Entity\User;
 use App\Enum\UserRole;
 use App\Enum\UserStatus;
 use App\Repository\UserRepository;
+use App\Service\AsyncService;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -21,6 +23,7 @@ class UserManager
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
+        private readonly AsyncService $asyncService,
     )
     {
     }
@@ -292,5 +295,24 @@ class UserManager
         $user = $userRepository->findOneBy(['token' => $token]);
 
         return $user;
+    }
+
+    public function sendNewSkillNotification(array $users, array $skills): bool
+    {
+        foreach ($users as $userLogin) {
+            $user = $this->findUserByLogin($userLogin);
+            $userSkills = array_map(static fn(TeacherSkill $teacherSkill) => $teacherSkill->getSkillName(), $user->getTeacherSkills()->toArray());
+            $newUserSkills = array_values(array_diff($userSkills, $skills));
+            if ($newUserSkills) {
+                $messageText = 'new skills added: ' . implode(',', $newUserSkills);
+                $messageNotification = (new SendNotificationDTO($user->getId(), $messageText))->toAMQPMessage();
+//                if ($user->getLogin() === 'my_user7') {
+//                    dd($user->getPreferred());
+//                }
+                $this->asyncService->publishToExchange(AsyncService::SEND_NOTIFICATION, $messageNotification, $user->getPreferred());
+            }
+        }
+
+        return true;
     }
 }

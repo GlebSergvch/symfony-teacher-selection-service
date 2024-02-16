@@ -83,6 +83,15 @@ services:
     ports:
       - 3000:3000
 
+  supervisor:
+    build: docker/supervisor
+    container_name: 'supervisor'
+    volumes:
+      - ./:/app
+      - ./docker/supervisor/supervisord.conf:/etc/supervisor/supervisord.conf
+    working_dir: /app
+    command: [ "supervisord", "-c", "/etc/supervisor/supervisord.conf" ]
+
 volumes:
   dump:
   postgresql:

@@ -2,8 +2,11 @@
 
 namespace App\Controller\Api\v1;
 
+use App\Client\StatsdAPIClient;
+use App\Dto\SkillDto;
 use App\Entity\Skill;
 use App\Manager\SkillManager;
+use App\Service\AsyncService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +19,11 @@ class SkillController extends AbstractController
     private const DEFAULT_PAGE = 0;
     private const DEFAULT_PER_PAGE = 20;
 
-    public function __construct(private readonly SkillManager $skillManager)
+    public function __construct(
+        private readonly SkillManager $skillManager,
+        private readonly StatsdAPIClient $statsdAPIClient,
+        private readonly AsyncService $asyncService,
+    )
     {
     }
 
@@ -59,5 +66,18 @@ class SkillController extends AbstractController
         $result = $this->skillManager->deleteSkill($skillId);
 
         return new JsonResponse(['success' => $result], $result ? Response::HTTP_OK : Response::HTTP_NOT_FOUND);
+    }
+
+    #[Route(path: '/update-skill-async', methods: ['PATCH'])]
+    public function updateSkillAsync(Request $request)
+    {
+        $this->statsdAPIClient->increment(AsyncService::UPDATE_SKILL);
+        $skillId = $request->query->get('skillId');
+        $skillName = $request->query->get('name');
+
+        $messageSkill = (new SkillDto($skillId, $skillName))->toAMQPMessage();
+        $result = $this->asyncService->publishToExchange(AsyncService::UPDATE_SKILL, $messageSkill);
+
+        return new JsonResponse($result, 200);
     }
 }

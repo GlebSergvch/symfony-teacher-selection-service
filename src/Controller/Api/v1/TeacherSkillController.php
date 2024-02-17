@@ -83,7 +83,6 @@ class TeacherSkillController extends AbstractController
     #[Route(path: '/add-teacher-skill', methods: ['POST'])]
     public function addTeacherSkills(Request $request)
     {
-        $this->statsdAPIClient->increment('add_teacher_skill');
         $data = json_decode($request->getContent(), true);
         $teachers = $data['users'];
         $skills = $data['skills'];

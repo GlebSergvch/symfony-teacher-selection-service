@@ -9,6 +9,9 @@ old_sound_rabbit_mq:
     send_notification:
       connection: default
       exchange_options: { name: 'old_sound_rabbit_mq.send_notification', type: topic }
+    update_skill:
+      connection: default
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: direct }
 
   consumers:
     add_teachers_skills:
@@ -42,6 +45,17 @@ old_sound_rabbit_mq:
         name: 'old_sound_rabbit_mq.consumer.send_notification.sms'
         routing_keys: [ !php/const App\Entity\User::SMS_NOTIFICATION ]
       callback: App\Consumer\SendSmsNotification\Consumer
+      idle_timeout: 300
+      idle_timeout_exit_code: 0
+      graceful_max_execution:
+        timeout: 1800
+        exit_code: 0
+      qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
+    update_skill:
+      connection: default
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: direct }
+      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill' }
+      callback: App\Consumer\UpdateSkill\Consumer
       idle_timeout: 300
       idle_timeout_exit_code: 0
       graceful_max_execution:

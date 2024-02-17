@@ -8,6 +8,7 @@ class AsyncService
 {
     public const ADD_TEACHERS_SKILLS = 'add_teachers_skills';
     public const SEND_NOTIFICATION = 'send_notification';
+    public const UPDATE_SKILL = 'update_skill';
 
     /** @var ProducerInterface[] */
     private array $producers;
@@ -26,7 +27,6 @@ class AsyncService
     {
         if (isset($this->producers[$producerName])) {
             $this->producers[$producerName]->publish($message, $routingKey ?? '', $additionalProperties ?? []);
-
             return true;
         }
 

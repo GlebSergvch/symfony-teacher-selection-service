@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Consumer\AddTeachersSkills;
+namespace App\Consumer\UpdateSkill;
 
-use App\Consumer\AddTeachersSkills\Input\Message;
-use App\Manager\UserManager;
-use App\Service\TeacherSkillService;
+use App\Consumer\UpdateSkill\Input\Message;
+use App\Manager\SkillManager;
 use Doctrine\ORM\EntityManagerInterface;
 use JsonException;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
@@ -16,10 +15,8 @@ class Consumer implements ConsumerInterface
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ValidatorInterface $validator,
-        private readonly TeacherSkillService $subscriptionService,
-        private readonly UserManager $userManager
-    )
-    {
+        private readonly SkillManager $skillManager,
+    ) {
     }
 
     public function execute(AMQPMessage $msg): int
@@ -34,19 +31,10 @@ class Consumer implements ConsumerInterface
             return $this->reject($e->getMessage());
         }
 
-        $teachers = $message->getTeachers();
-        $skills = $message->getSkills();
+        $skillId = $message->getSkillId();
+        $skillNewName = $message->getSkillName();
 
-        if (!$teachers || !$skills) {
-            return $this->reject(sprintf('empty values'));
-        }
-
-        $this->subscriptionService->addTeachersSkills($teachers, $skills);
-
-//        foreach ($teachers as $teacher) {
-//            $user = $this->userManager->findUserByLogin($teacher);
-//            $skills = $user->getTeacherSkills();
-//        }
+        $this->skillManager->updateSkill($skillId, $skillNewName);
 
         $this->entityManager->clear();
         $this->entityManager->getConnection()->close();

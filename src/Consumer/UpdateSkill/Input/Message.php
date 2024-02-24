@@ -6,10 +6,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class Message
 {
-    #[Assert\Type('skillId')]
+    #[Assert\Type('numeric')]
     private int $skillId;
 
-    #[Assert\Type('name')]
+    #[Assert\Type('string')]
     #[Assert\Length(max: 60)]
     private string $skillName;
 

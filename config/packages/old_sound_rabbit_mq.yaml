@@ -11,7 +11,7 @@ old_sound_rabbit_mq:
       exchange_options: { name: 'old_sound_rabbit_mq.send_notification', type: topic }
     update_skill:
       connection: default
-      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: direct }
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: x-consistent-hash }
 
   consumers:
     add_teachers_skills:
@@ -51,10 +51,109 @@ old_sound_rabbit_mq:
         timeout: 1800
         exit_code: 0
       qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
-    update_skill:
+    update_skill_0:
       connection: default
-      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: direct }
-      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill' }
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: x-consistent-hash }
+      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill_0', routing_key: '1' }
+      callback: App\Consumer\UpdateSkill\Consumer
+      idle_timeout: 300
+      idle_timeout_exit_code: 0
+      graceful_max_execution:
+        timeout: 20
+        exit_code: 0
+      qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
+    update_skill_1:
+      connection: default
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: x-consistent-hash }
+      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill_1', routing_key: '1' }
+      callback: App\Consumer\UpdateSkill\Consumer
+      idle_timeout: 300
+      idle_timeout_exit_code: 0
+      graceful_max_execution:
+        timeout: 1800
+        exit_code: 0
+      qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
+    update_skill_2:
+      connection: default
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: x-consistent-hash }
+      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill_2', routing_key: '1' }
+      callback: App\Consumer\UpdateSkill\Consumer
+      idle_timeout: 300
+      idle_timeout_exit_code: 0
+      graceful_max_execution:
+        timeout: 1800
+        exit_code: 0
+      qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
+    update_skill_3:
+      connection: default
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: x-consistent-hash }
+      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill_3', routing_key: '1' }
+      callback: App\Consumer\UpdateSkill\Consumer
+      idle_timeout: 300
+      idle_timeout_exit_code: 0
+      graceful_max_execution:
+        timeout: 1800
+        exit_code: 0
+      qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
+    update_skill_4:
+      connection: default
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: x-consistent-hash }
+      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill_4', routing_key: '1' }
+      callback: App\Consumer\UpdateSkill\Consumer
+      idle_timeout: 300
+      idle_timeout_exit_code: 0
+      graceful_max_execution:
+        timeout: 1800
+        exit_code: 0
+      qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
+    update_skill_5:
+      connection: default
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: x-consistent-hash }
+      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill_5', routing_key: '1' }
+      callback: App\Consumer\UpdateSkill\Consumer
+      idle_timeout: 300
+      idle_timeout_exit_code: 0
+      graceful_max_execution:
+        timeout: 1800
+        exit_code: 0
+      qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
+    update_skill_6:
+      connection: default
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: x-consistent-hash }
+      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill_6', routing_key: '1' }
+      callback: App\Consumer\UpdateSkill\Consumer
+      idle_timeout: 300
+      idle_timeout_exit_code: 0
+      graceful_max_execution:
+        timeout: 1800
+        exit_code: 0
+      qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
+    update_skill_7:
+      connection: default
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: x-consistent-hash }
+      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill_7', routing_key: '1' }
+      callback: App\Consumer\UpdateSkill\Consumer
+      idle_timeout: 300
+      idle_timeout_exit_code: 0
+      graceful_max_execution:
+        timeout: 1800
+        exit_code: 0
+      qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
+    update_skill_8:
+      connection: default
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: x-consistent-hash }
+      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill_8', routing_key: '1' }
+      callback: App\Consumer\UpdateSkill\Consumer
+      idle_timeout: 300
+      idle_timeout_exit_code: 0
+      graceful_max_execution:
+        timeout: 1800
+        exit_code: 0
+      qos_options: { prefetch_size: 0, prefetch_count: 1, global: false }
+    update_skill_9:
+      connection: default
+      exchange_options: { name: 'old_sound_rabbit_mq.update_skill', type: x-consistent-hash }
+      queue_options: { name: 'old_sound_rabbit_mq.consumer.update_skill_9', routing_key: '1' }
       callback: App\Consumer\UpdateSkill\Consumer
       idle_timeout: 300
       idle_timeout_exit_code: 0

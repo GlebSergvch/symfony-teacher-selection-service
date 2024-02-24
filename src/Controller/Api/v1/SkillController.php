@@ -76,7 +76,8 @@ class SkillController extends AbstractController
         $skillName = $request->query->get('name');
 
         $messageSkill = (new SkillDto($skillId, $skillName))->toAMQPMessage();
-        $result = $this->asyncService->publishToExchange(AsyncService::UPDATE_SKILL, $messageSkill);
+        $sid = rand(0, 10);
+        $result = $this->asyncService->publishToExchange(AsyncService::UPDATE_SKILL, $messageSkill, $sid);
 
         return new JsonResponse($result, 200);
     }

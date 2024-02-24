@@ -34,6 +34,8 @@ class Consumer implements ConsumerInterface
         $skillId = $message->getSkillId();
         $skillNewName = $message->getSkillName();
 
+        sleep(1);
+
         $this->skillManager->updateSkill($skillId, $skillNewName);
 
         $this->entityManager->clear();

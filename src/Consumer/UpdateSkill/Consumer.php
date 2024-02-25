@@ -2,6 +2,7 @@
 
 namespace App\Consumer\UpdateSkill;
 
+use App\Client\StatsdAPIClient;
 use App\Consumer\UpdateSkill\Input\Message;
 use App\Manager\SkillManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,6 +17,8 @@ class Consumer implements ConsumerInterface
         private readonly EntityManagerInterface $entityManager,
         private readonly ValidatorInterface $validator,
         private readonly SkillManager $skillManager,
+        private readonly StatsdAPIClient $statsdAPIClient,
+        private readonly string $key,
     ) {
     }
 
@@ -34,10 +37,11 @@ class Consumer implements ConsumerInterface
         $skillId = $message->getSkillId();
         $skillNewName = $message->getSkillName();
 
-        sleep(1);
+        usleep(500000);
 
         $this->skillManager->updateSkill($skillId, $skillNewName);
 
+        $this->statsdAPIClient->increment($this->key);
         $this->entityManager->clear();
         $this->entityManager->getConnection()->close();
 

@@ -34,3 +34,65 @@ services:
     App\Service\AuthService:
         arguments:
             $tokenTTL: '%env(JWT_TTL_SEC)%'
+
+    App\Client\StatsdAPIClient:
+        arguments:
+            - graphite
+            - 8125
+            - my_app
+
+    App\Service\AsyncService:
+        calls:
+            - [ 'registerProducer', [ !php/const App\Service\AsyncService::ADD_TEACHERS_SKILLS, '@old_sound_rabbit_mq.add_teachers_skills_producer' ] ]
+            - [ 'registerProducer', [ !php/const App\Service\AsyncService::SEND_NOTIFICATION,    '@old_sound_rabbit_mq.send_notification_producer'] ]
+            - [ 'registerProducer', [ !php/const App\Service\AsyncService::UPDATE_SKILL,    '@old_sound_rabbit_mq.update_skill_producer'] ]
+              
+    App\Consumer\UpdateSkill\Consumer0:
+        class: App\Consumer\UpdateSkill\Consumer
+        arguments:
+            $key: 'update_skill_0'
+
+    App\Consumer\UpdateSkill\Consumer1:
+        class: App\Consumer\UpdateSkill\Consumer
+        arguments:
+            $key: 'update_skill_1'
+
+    App\Consumer\UpdateSkill\Consumer2:
+        class: App\Consumer\UpdateSkill\Consumer
+        arguments:
+            $key: 'update_skill_2'
+
+    App\Consumer\UpdateSkill\Consumer3:
+        class: App\Consumer\UpdateSkill\Consumer
+        arguments:
+            $key: 'update_skill_3'
+
+    App\Consumer\UpdateSkill\Consumer4:
+        class: App\Consumer\UpdateSkill\Consumer
+        arguments:
+            $key: 'update_skill_4'
+
+    App\Consumer\UpdateSkill\Consumer5:
+        class: App\Consumer\UpdateSkill\Consumer
+        arguments:
+            $key: 'update_skill_5'
+
+    App\Consumer\UpdateSkill\Consumer6:
+        class: App\Consumer\UpdateSkill\Consumer
+        arguments:
+            $key: 'update_skill_6'
+
+    App\Consumer\UpdateSkill\Consumer7:
+        class: App\Consumer\UpdateSkill\Consumer
+        arguments:
+            $key: 'update_skill_7'
+
+    App\Consumer\UpdateSkill\Consumer8:
+        class: App\Consumer\UpdateSkill\Consumer
+        arguments:
+            $key: 'update_skill_8'
+
+    App\Consumer\UpdateSkill\Consumer9:
+        class: App\Consumer\UpdateSkill\Consumer
+        arguments:
+            $key: 'update_skill_9'            

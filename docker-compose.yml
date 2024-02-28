@@ -51,6 +51,47 @@ services:
       - dump:/app/dump
       - postgresql_test:/var/lib/postgresql/data
 
+  rabbitmq:
+    image: rabbitmq:3.7.5-management
+    working_dir: /app
+    hostname: rabbit-mq
+    container_name: 'rabbit-mq'
+    ports:
+      - 15672:15672
+      - 5672:5672
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+
+  graphite:
+    image: graphiteapp/graphite-statsd
+    container_name: 'graphite'
+    restart: always
+    ports:
+      - 8000:80
+      - 2003:2003
+      - 2004:2004
+      - 2023:2023
+      - 2024:2024
+      - 8125:8125/udp
+      - 8126:8126
+
+  grafana:
+    image: grafana/grafana
+    container_name: 'grafana'
+    restart: always
+    ports:
+      - 3000:3000
+
+  supervisor:
+    build: docker/supervisor
+    container_name: 'supervisor'
+    volumes:
+      - ./:/app
+      - ./docker/supervisor/supervisord.conf:/etc/supervisor/supervisord.conf
+    working_dir: /app
+    command: [ "supervisord", "-c", "/etc/supervisor/supervisord.conf" ]
+
 volumes:
   dump:
   postgresql:

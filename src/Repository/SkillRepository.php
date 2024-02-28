@@ -23,4 +23,21 @@ class SkillRepository extends EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @param string $name
+     * @return array
+     */
+    public function findByName(string $skill): array
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('t')
+            ->from($this->getClassName(), 't')
+            ->orderBy('t.id', 'DESC')
+            ->where('t.name LIKE :name')
+            ->setParameter('name', '%' . $skill . '%')
+            ->getFirstResult();
+
+        return $qb->getQuery()->getResult();
+    }
 }

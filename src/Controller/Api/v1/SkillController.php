@@ -2,8 +2,11 @@
 
 namespace App\Controller\Api\v1;
 
+use App\Client\StatsdAPIClient;
+use App\Dto\SkillDto;
 use App\Entity\Skill;
 use App\Manager\SkillManager;
+use App\Service\AsyncService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +19,11 @@ class SkillController extends AbstractController
     private const DEFAULT_PAGE = 0;
     private const DEFAULT_PER_PAGE = 20;
 
-    public function __construct(private readonly SkillManager $skillManager)
+    public function __construct(
+        private readonly SkillManager $skillManager,
+        private readonly StatsdAPIClient $statsdAPIClient,
+        private readonly AsyncService $asyncService,
+    )
     {
     }
 
@@ -24,7 +31,7 @@ class SkillController extends AbstractController
     public function saveSkillAction(Request $request): Response
     {
         $skillName = $request->request->get('name');
-        $skillId = $this->skillManager->saveSkill($skillName);
+        $skillId = $this->skillManager->saveSkill($skillName)->getId();
         [$data, $code] = $skillId === null ?
             [['success' => false], Response::HTTP_BAD_REQUEST] :
             [['success' => true, 'userId' => $skillId], Response::HTTP_OK];
@@ -59,5 +66,20 @@ class SkillController extends AbstractController
         $result = $this->skillManager->deleteSkill($skillId);
 
         return new JsonResponse(['success' => $result], $result ? Response::HTTP_OK : Response::HTTP_NOT_FOUND);
+    }
+
+    #[Route(path: '/update-skill-async', methods: ['PATCH'])]
+    public function updateSkillAsync(Request $request)
+    {
+        $this->statsdAPIClient->increment(AsyncService::UPDATE_SKILL);
+        $skillId = $request->query->get('skillId');
+        $skillName = $request->query->get('name');
+
+        $messageSkill = (new SkillDto($skillId, $skillName))->toAMQPMessage();
+        // параметр для присваивания случайного routingKey, чтобы очередь шла в разные консьюмеры
+        $sid = rand(0, 200);
+        $result = $this->asyncService->publishToExchange(AsyncService::UPDATE_SKILL, $messageSkill, $sid);
+
+        return new JsonResponse($result, 200);
     }
 }

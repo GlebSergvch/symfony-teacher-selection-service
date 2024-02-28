@@ -3,7 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Enum\UserRole;
+use App\Service\AuthService;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\NonUniqueResultException;
 
 class UserRepository extends EntityRepository
 {
@@ -75,5 +79,25 @@ class UserRepository extends EntityRepository
             ->setMaxResults($perPage);
 
         return $qb->getQuery()->getResult();
+    }
+
+
+    /**
+     * @param string $login
+     * @param UserRole $role
+     * @return float|int|mixed|string|null
+     * @throws NonUniqueResultException
+     */
+    public function findTeacherByLogin(string $login)
+    {
+
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('t')
+            ->from($this->getClassName(), 't')
+            ->orderBy('t.id', 'DESC')
+            ->where('t.login LIKE :login')
+            ->setParameter('login', '%' . $login . '%');
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }

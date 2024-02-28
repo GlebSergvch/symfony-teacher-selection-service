@@ -20,8 +20,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueConstraint(name: "user__login__uniq__idx", columns: ["login"])]
 #[UniqueConstraint(name: "user__password__uniq__idx", columns: ["password"])]
 #[UniqueConstraint(name: "user__user_profile_id__uniq__idx", columns: ["user_profile_id"])]
+#[UniqueConstraint(name: "user__phone__uniq__idx", columns: ["phone"])]
+#[UniqueConstraint(name: "user__email__uniq__idx", columns: ["email"])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const EMAIL_NOTIFICATION = 'email';
+    public const SMS_NOTIFICATION = 'sms';
+
     #[ORM\Column(name: 'id', type: 'bigint', unique: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -47,6 +52,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: false)]
     private DateTime $updatedAt;
+
+    #[ORM\Column(type: 'string', length: 11, unique: true, nullable: true)]
+    private ?string $phone = null;
+
+    #[ORM\Column(type: 'string', length: 128, unique: true, nullable: true)]
+    private ?string $email = null;
+
+    #[ORM\Column(type: 'string', length: 10, nullable: true)]
+    private ?string $preferred = null;
 
     #[ORM\OneToOne(targetEntity: "UserProfile")]
     #[ORM\JoinColumn(name: 'user_profile_id', referencedColumnName: 'id')]
@@ -102,6 +116,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setToken(?string $token): void
     {
         $this->token = $token;
+    }
+
+    public function getTeacherSkills()
+    {
+        return $this->teacherSkills;
     }
 
     public function getSalt(): ?string
@@ -167,6 +186,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setUpdatedAt(): void {
         $this->updatedAt = new DateTime();
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): void
+    {
+        $this->phone = $phone;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): void
+    {
+        $this->email = $email;
+    }
+
+    public function getPreferred(): ?string
+    {
+        return $this->preferred;
+    }
+
+    public function setPreferred(?string $preferred): void
+    {
+        $this->preferred = $preferred;
     }
 
     public function getuserProfile()

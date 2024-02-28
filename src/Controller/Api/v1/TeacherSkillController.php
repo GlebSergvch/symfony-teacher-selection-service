@@ -2,10 +2,17 @@
 
 namespace App\Controller\Api\v1;
 
+use App\Client\StatsdAPIClient;
+use App\Dto\SendNotificationDTO;
+use App\Dto\TeacherSkillDto;
 use App\Entity\TeacherSkill;
+use App\Entity\User;
+use App\Enum\UserRole;
 use App\Manager\SkillManager;
 use App\Manager\TeacherSkillManager;
 use App\Manager\UserManager;
+use App\Service\AsyncService;
+use App\Service\TeacherSkillService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +28,10 @@ class TeacherSkillController extends AbstractController
     public function __construct(
         private readonly TeacherSkillManager $teacherSkillManager,
         private readonly UserManager $userManager,
-        private readonly SkillManager $skillManager
+        private readonly SkillManager $skillManager,
+        private readonly TeacherSkillService $teacherSkillService,
+        private readonly StatsdAPIClient $statsdAPIClient,
+        private readonly AsyncService $asyncService,
     )
     {
     }
@@ -68,5 +78,34 @@ class TeacherSkillController extends AbstractController
         $result = $this->teacherSkillManager->deleteTeacherSkill($studentId, $groupId);
 
         return new JsonResponse(['success' => $result], $result ? Response::HTTP_OK : Response::HTTP_NOT_FOUND);
+    }
+
+    #[Route(path: '/add-teacher-skill', methods: ['POST'])]
+    public function addTeacherSkills(Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+        $teachers = $data['users'];
+        $skills = $data['skills'];
+
+
+        $users = $this->teacherSkillService->addTeachersSkills($teachers, $skills);
+        $code = empty($users) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
+        return new JsonResponse(['users' => array_map(static fn(User $user) => $user->toArray(), $users)], $code);
+    }
+
+    #[Route(path: '/add-teacher-skill-async', methods: ['POST'])]
+    public function addTeacherSkillsAsync(Request $request)
+    {
+        $this->statsdAPIClient->increment('add_teacher_skill');
+        $data = json_decode($request->getContent(), true);
+        $teachers = $data['users'];
+        $skills = $data['skills'];
+
+        $this->userManager->sendNewSkillNotification($teachers, $skills);
+
+        $messageTeacherSkill = (new TeacherSkillDto($teachers, $skills))->toAMQPMessage();
+        $result = $this->asyncService->publishToExchange(AsyncService::ADD_TEACHERS_SKILLS, $messageTeacherSkill);
+
+        return new JsonResponse($result, 200);
     }
 }

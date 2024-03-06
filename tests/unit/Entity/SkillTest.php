@@ -54,14 +54,14 @@ class SkillTest extends TestCase
         }
     }
 
-//    /**
-//     * @dataProvider skillDataProvider
-//     */
-//    public function testToSkillWithoutCreatedAt(Skill $skill, array $expected, ?int $delay = null): void
-//    {
-//        static::assertEquals($expected['id'], $skill->getId(), 'Tweet::toFeed should return correct id');
-//        static::assertEquals($expected['name'], $skill->getName(), 'Tweet::toFeed should return correct name');
-//    }
+    /**
+     * @dataProvider skillDataProvider
+     */
+    public function testToSkillWithoutCreatedAt(Skill $skill, array $expected, ?int $delay = null): void
+    {
+        static::assertEquals($expected['id'], $skill->getId(), 'Tweet::toFeed should return correct id');
+        static::assertEquals($expected['name'], $skill->getName(), 'Tweet::toFeed should return correct name');
+    }
 
     private function makeSkill(array $data): Skill
     {

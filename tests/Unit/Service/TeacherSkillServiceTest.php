@@ -20,7 +20,7 @@ class TeacherSkillServiceTest extends Unit
     private static $entityManager;
 
     /** @var UserPasswordHasherInterface|MockInterface */
-    private static $passwordHasher;
+//    private static $passwordHasher;
     private const CORRECT_TEACHER = 1;
     private const CORRECT_SKILL = 2;
     private const INCORRECT_TEACHER = 3;

@@ -56,6 +56,13 @@ class TeacherSkillServiceTest extends Unit
         ];
     }
 
+    public function getDataProvider(): array
+    {
+        return [
+            'get correct' => [1, 1, true]
+        ];
+    }
+
     /**
      * @dataProvider subscribeDataProvider
      */
@@ -67,5 +74,18 @@ class TeacherSkillServiceTest extends Unit
         $actual = $teacherSkillManager->deleteTeacherSkill($teacherId, $skillId);
 
         static::assertSame($expected, $actual, 'Subscribe should return correct result');
+    }
+
+    /**
+     * @dataProvider getDataProvider
+     */
+    public function testGetTeachersSkillsCorrectResult(int $page, int $perPage, bool $expected): void
+    {
+        $skillManager = new SkillManager(self::$entityManager);
+        $teacherSkillManager = new TeacherSkillManager(self::$entityManager, $skillManager);
+
+        $actual = $teacherSkillManager->getTeacherSkill($page, $perPage);
+
+        static::assertSame($expected, $actual, 'get correct !');
     }
 }

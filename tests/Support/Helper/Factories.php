@@ -1,6 +1,6 @@
 <?php
 
-namespace Support\Helper;
+namespace App\Tests\Support\Helper;
 
 use App\Entity\Skill;
 use App\Entity\User;

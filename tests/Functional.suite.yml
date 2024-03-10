@@ -14,8 +14,8 @@ modules:
             depends: Symfony
             cleanup: true
         - Asserts
-#        - \App\Tests\Helper\Functional
-        - \App\Tests\Helper\Factories
+        - \App\Tests\Support\Helper\Functional
+        - \App\Tests\Support\Helper\Factories
 #        - Doctrine:
 #              depends: Symfony
 #              cleanup: true

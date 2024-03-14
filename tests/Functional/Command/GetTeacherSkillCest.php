@@ -26,7 +26,7 @@ class GetTeacherSkillCest
     public function getTeachersSkillsDataProvider(): array
     {
         return [
-            'teachers_skills' => [
+            'correct' => [
                 [
                     'teacher' => self::TEACHER_ONE,
                     'skill' => self::SKILL_ONE,
@@ -57,11 +57,15 @@ class GetTeacherSkillCest
     public function testGetTeachersSkills(FunctionalTester $I, Example $example): void
     {
         $teacherSkillService = $I->grabService(TeacherSkillManager::class);
-//        $teacherSkillService = $I->grabService(TeacherSkillRepository::class);
-//        $teacherSkillService = $I->grabService(TeacherSkillService::class);
-        $teacherSkills = $teacherSkillService->getTeacherSkill(1, 20);
-        dd($teacherSkills);
-        $I->assertSame($example['expected'], ['teachers_skills' => array_map(static fn(TeacherSkill $teacherSkill) => $teacherSkill->toArray(), $teacherSkills)]);
+        $teacherSkills = $teacherSkillService->getTeacherSkill(0, 20);
+        $expectedData = [];
+        foreach ($teacherSkills as $teacherSkill) {
+            $expectedData[] = [
+                'teacher' => $teacherSkill->getTeacher()->getLogin(),
+                'skill' => $teacherSkill->getSkill()->getName(),
+            ];
+        }
+        $expectedExample = $example->getIterator()->getArrayCopy();
+        $I->assertSame($expectedExample, $expectedData);
     }
-
 }

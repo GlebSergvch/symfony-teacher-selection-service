@@ -44,7 +44,8 @@
         "psr-4": {
             "UnitTests\\": "tests/phpunit",
             "CodeceptionUnitTests\\": "tests/Unit",
-            "IntegrationsTests\\": "tests/Functional"
+            "IntegrationsTests\\": "tests/Functional",
+            "AcceptanceTests\\": "tests/Acceptance"
         }
     },
     "replace": {

@@ -9,6 +9,7 @@ class UserCest
 {
     public function testAddUserActionForAdmin(AcceptanceTester $I): void
     {
+//        dd($_ENV['APP_ENV']);
         $I->amAdmin();
         $res = $I->sendPost('/api/v1/user', $this->getAddUserParams());
         dd($res);

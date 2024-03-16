@@ -29,7 +29,7 @@ class AcceptanceTester extends \Codeception\Actor
 
     public function amAdmin(): void
     {
-        $this->amHttpAuthenticated('admin', 'my_pass');
+        $this->amHttpAuthenticated('my_user', 'my_pass');
     }
 
     public function amUser(): void

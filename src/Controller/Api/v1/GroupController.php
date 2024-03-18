@@ -26,10 +26,10 @@ class GroupController extends AbstractController
         $groupName = $request->request->get('groupName');
         $minimumSize = $request->request->get('minimumSize');
         $maximumSize = $request->request->get('maximumSize');
-        $groupId = $this->groupManager->create($groupName, $minimumSize, $maximumSize);
-        [$data, $code] = $groupId === null ?
+        $group = $this->groupManager->create($groupName, $minimumSize, $maximumSize);
+        [$data, $code] = $group === null ?
             [['success' => false], Response::HTTP_BAD_REQUEST] :
-            [['success' => true, 'groupId' => $groupId], Response::HTTP_OK];
+            [['success' => true, 'groupId' => $group->getId()], Response::HTTP_OK];
 
         return new JsonResponse($data, $code);
     }
@@ -45,7 +45,7 @@ class GroupController extends AbstractController
     }
 
     #[Route(path: '', methods: ['DELETE'])]
-    public function deleteUserAction(Request $request): Response
+    public function deleteGroupAction(Request $request): Response
     {
         $groupId = $request->query->get('groupId');
         $result = $this->groupManager->deleteGroup($groupId);

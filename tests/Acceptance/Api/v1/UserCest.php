@@ -7,64 +7,96 @@ use Codeception\Util\HttpCode;
 
 class UserCest
 {
+
+    private string $token;
+
+    public function _before(AcceptanceTester $I): void
+    {
+//         Аутентификация пользователя
+        $I->haveHttpHeader('Authorization', 'Basic ' . base64_encode('my_user:my_pass'));
+        $tokenResponse = $I->sendPost('/api/v1/token', );
+        $responseData = json_decode($tokenResponse, true);
+        $this->token = $responseData['token'];
+    }
+
     public function testAddUserActionForAdmin(AcceptanceTester $I): void
     {
-        $I->amAdmin();
-
-        $tokenResponse = $I->sendPost('/api/v1/token');
-        $responseData = json_decode($tokenResponse, true);
-        $token = $responseData['token'];
-
-//        dd($token);
-
-        // Отправка запроса с токеном в заголовке Authorization
-        $I->haveHttpHeader('Authorization', 'Bearer ' . $token);
-
-        // Устанавливаем заголовок Authorization
-        $I->amBearerAuthenticated($token);
-
-        $params = $this->getAddUserParams();
-//        dd($authorizationHeader); die();
-
-
-//        $I->haveHttpHeader('Host', 'www.wikipedia.org');
-//        $I->haveHttpHeader('Host', "<calculated when request is sent>");
-//        $hostHeader = $I->grabHttpHeader('Host');
-
-
+        $I->amBearerAuth($this->token);
+        $params = self::USERS_DATA['create_user_data'];
         $I->sendPost('/api/v1/user', $params);
 
         // Проверяем успешность запроса
         $I->canSeeResponseCodeIs(HttpCode::OK);
-        $I->canSeeResponseMatchesJsonType(['id' => 'integer:>0']);
+        $I->canSeeResponseMatchesJsonType(['userId' => 'integer:>0']);
     }
 
-    private function getAddUserParams(): array
+    public function testGetUserByLogin(AcceptanceTester $I): void
     {
-        return [
+        $I->amBearerAuth($this->token);
+        $params = self::USERS_DATA['find_user_data'];
+        $I->sendPost('/api/v1/user', $params);
+
+        $login = $params['login'];
+        $I->sendGet("/api/v1/user/find-login/$login");
+
+        // Проверяем успешность запроса
+        $I->canSeeResponseCodeIs(HttpCode::OK);
+        $I->canSeeResponseMatchesJsonType(['users' => 'array']);
+    }
+
+    public function testUpdateByLogin(AcceptanceTester $I): void
+    {
+        $I->amBearerAuth($this->token);
+        $params = self::USERS_DATA['update_user_data'];
+        $res = json_decode($I->sendPost('/api/v1/user', $params), true);
+
+        $login = $params['login'] . '_updated';
+        $userId = $res['userId'];
+        $I->sendPatch("/api/v1/user?userId=$userId&login=$login");
+
+        $I->canSeeResponseCodeIs(HttpCode::OK);
+        $I->canSeeResponseMatchesJsonType(['success' => 'boolean']);
+        $I->canSeeResponseContainsJson(['success' => true]); // Изменение в этой строке
+    }
+
+    public function testDeleteUser(AcceptanceTester $I): void
+    {
+        $I->amBearerAuth($this->token);
+        $params = self::USERS_DATA['delete_user_data'];
+        $res = json_decode($I->sendPost('/api/v1/user', $params), true);
+
+        $userId = $res['userId'];
+        $I->sendDelete("/api/v1/user?userId=$userId");
+
+        $I->canSeeResponseCodeIs(HttpCode::OK);
+        $I->canSeeResponseMatchesJsonType(['success' => 'boolean']);
+        $I->canSeeResponseContainsJson(['success' => true]); // Изменение в этой строке
+    }
+
+    const USERS_DATA = [
+        'create_user_data' => [
             'login' => 'other_user',
             'password' => 'other_password',
-//            'roles' => '["ROLE_USER"]',
-            'age' => 23,
             'isActive' => 'true',
-        ];
-    }
-
-//    private function authenticateUserAndGetToken(AcceptanceTester $I): string
-//    {
-//        // Отправка запроса для аутентификации и получения токена
-//        $I->sendPOST('/api/v1/token');
-//
-//        // Проверка успешности аутентификации
-//        $I->canSeeResponseCodeIs(HttpCode::OK);
-//        $response = json_decode($I->grabResponse(), true);
-//
-//        // Проверка наличия токена в ответе
-//        if (!isset($response['token'])) {
-//            throw new \RuntimeException('Token not found in response');
-//        }
-//
-//        // Возвращаем токен
-//        return $response['token'];
-//    }
+            'age' => 23,
+        ],
+        'find_user_data' => [
+            'login' => 'find_user',
+            'password' => 'other_password',
+            'isActive' => 'true',
+            'age' => 23,
+        ],
+        'update_user_data' => [
+            'login' => 'updated_user',
+            'password' => 'other_password',
+            'isActive' => 'true',
+            'age' => 23,
+        ],
+        'delete_user_data' => [
+            'login' => 'delete_user',
+            'password' => 'other_password',
+            'isActive' => 'true',
+            'age' => 23,
+        ],
+    ];
 }

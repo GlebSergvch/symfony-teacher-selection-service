@@ -36,4 +36,9 @@ class AcceptanceTester extends \Codeception\Actor
     {
         $this->amHttpAuthenticated('user', 'other_pass');
     }
+
+    public function amBearerAuth(string $token)
+    {
+        $this->amBearerAuthenticated($token);
+    }
 }

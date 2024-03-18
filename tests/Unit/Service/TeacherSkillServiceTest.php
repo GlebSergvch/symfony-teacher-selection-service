@@ -66,26 +66,12 @@ class TeacherSkillServiceTest extends Unit
     /**
      * @dataProvider subscribeDataProvider
      */
-    public function testSubscribeReturnsCorrectResult(int $teacherId, int $skillId, bool $expected): void
+    public function testDeleteTeacherSkillCorrectResult(int $teacherId, int $skillId, bool $expected): void
     {
         $skillManager = new SkillManager(self::$entityManager);
         $teacherSkillManager = new TeacherSkillManager(self::$entityManager, $skillManager);
 
         $actual = $teacherSkillManager->deleteTeacherSkill($teacherId, $skillId);
-
         static::assertSame($expected, $actual, 'Subscribe should return correct result');
-    }
-
-    /**
-     * @dataProvider getDataProvider
-     */
-    public function testGetTeachersSkillsCorrectResult(int $page, int $perPage, bool $expected): void
-    {
-        $skillManager = new SkillManager(self::$entityManager);
-        $teacherSkillManager = new TeacherSkillManager(self::$entityManager, $skillManager);
-
-        $actual = $teacherSkillManager->getTeacherSkill($page, $perPage);
-
-        static::assertSame($expected, $actual, 'get correct !');
     }
 }

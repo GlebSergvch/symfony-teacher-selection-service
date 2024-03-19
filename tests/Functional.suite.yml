@@ -1,0 +1,24 @@
+# Codeception Test Suite Configuration
+#
+# Suite for functional tests
+# Emulate web requests and make application process them
+
+actor: FunctionalTester
+modules:
+    enabled:
+        - Asserts
+        - Symfony:
+              app_path: 'src'
+              environment: 'test'
+        - DataFactory:
+              depends: Doctrine2
+              cleanup: true
+        - Doctrine2:
+            depends: Symfony
+            cleanup: true
+        - Asserts
+        - \App\Tests\Support\Helper\Functional
+        - \App\Tests\Support\Helper\Factories
+        - Doctrine:
+            depends: Symfony
+            cleanup: true

@@ -66,7 +66,7 @@ class TeacherSkillController extends AbstractController
         $page = $request->query->get('page');
         $teacherSkills = $this->teacherSkillManager->getTeacherSkill($page ?? self::DEFAULT_PAGE, $perPage ?? self::DEFAULT_PER_PAGE);
         $code = empty($teacherSkills) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
-        return new JsonResponse(['teacherSkills' => array_map(static fn(TeacherSkill $teacherSkill) => $teacherSkill->toArray(), $teacherSkills)], $code);
+        return new JsonResponse(['teachers_skills' => array_map(static fn(TeacherSkill $teacherSkill) => $teacherSkill->toArray(), $teacherSkills)], $code);
     }
 
     #[Route(path: '', methods: ['DELETE'])]

@@ -15,8 +15,6 @@ class TeacherSkillManager
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private SkillManager $skillManager,
-        private UserManager $userManager,
-        private Security $security
     )
     {
     }
@@ -40,8 +38,9 @@ class TeacherSkillManager
     }
 
     /**
-     * @param string $skillName
-     * @return Skill
+     * @param User $user
+     * @param Skill $skill
+     * @return TeacherSkill
      */
     public function findOrCreateTeacherSkill(User $user, Skill $skill): TeacherSkill
     {

@@ -34,7 +34,7 @@ class SkillController extends AbstractController
         $skillId = $this->skillManager->saveSkill($skillName)->getId();
         [$data, $code] = $skillId === null ?
             [['success' => false], Response::HTTP_BAD_REQUEST] :
-            [['success' => true, 'userId' => $skillId], Response::HTTP_OK];
+            [['success' => true, 'skillId' => $skillId], Response::HTTP_OK];
 
         return new JsonResponse($data, $code);
     }

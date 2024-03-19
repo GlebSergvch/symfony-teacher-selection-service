@@ -4,8 +4,8 @@ namespace App\Enum;
 
 enum UserStatus:string
 {
-    case ACTIVE = 'teacher';
-    case DELETED = 'student';
+    case ACTIVE = 'active';
+    case DELETED = 'deleted';
 
     public static function getLabel(self $value): string {
         return match ($value) {

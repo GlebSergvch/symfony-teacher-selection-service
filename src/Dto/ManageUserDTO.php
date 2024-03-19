@@ -29,8 +29,8 @@ class ManageUserDTO
     {
         return new self(...[
             'login' => $user->getLogin(),
-            'password' => $user->getPassword(),
-            'roles' => $user->getRoles()
+            'roles' => $user->getRoles(),
+            'password' => $user->getPassword()
         ]);
     }
 
